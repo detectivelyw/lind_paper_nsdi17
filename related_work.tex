@@ -1,0 +1,140 @@
+\section{Related Work}
+\label{sec.related_work}
+
+This section summarizes a number of earlier initiatives to ensure the safety of
+ privileged code. %in user space and kernel space.
+The literature referenced in this section includes past efforts to define safety metrics,
+and to quantify areas of risk in an OS kernel, as well as background information
+ on technologies incorporated into Lind.
+
+\textbf{Safety metrics.}
+As in Section~\ref{sec.metric}, one 
+approach looked at identifying a correlation between the presence of bugs
+and certain directories or modules of the system (Chou~\cite{PittSFIeld},
+Palix~\cite{palix2011faults}.)
+However, this approach does not necessarily
+provide effective detection and defense against kernel bugs, as our test of the
+Chou metric in Section~\ref{sec.metric} attests.
+
+There are other approaches to identifying kernel vulnerabilities, some of
+which grew out of research in 
+%code complexity and code comprehension in 
+software design.
+Alhazmi~\cite{alhazmi2008application}
+used metrics like defect density and fault exposure ratio to assess potential risk,
+while Zimmermann~\cite{zimmermann2010searching}
+described metrics like code complexity, and code churn (the total added/modified/deleted 
+lines of code) to predict vulnerabilities. Kim in~\cite{kim2007vulnerability} analyzed
+the correlation between shared code size and shared vulnerabilities in
+successive versions of a software system. In~\cite{engler2001bugs}, Engler analyzed
+system code by static analysis to look for contradictions, such as acquired locks that are
+not released. While
+these prior approaches can be useful for determining software readiness for release, and
+evaluating the risk of vulnerability exploitation,
+they are less useful in providing insights for secure system design.
+
+Lastly, prior work has also examined the evolution of kernel defects over time, including
+Ozment~\cite{ozment2006milk} (see Section~\ref{sec.metric}) and Li~\cite{li2006have}.
+Li found a decrease in memory-related
+bugs, and identified semantic bugs as being the dominant root cause of these
+defects.
+% \lois{this sentence about Li says nothing and reads like
+% nonsense. He reported an increase in the bugs by studying the number of bugs?
+%I checked the paper but had no clue what this referred to}
+%\yiwen{I fixed it. Please check.}
+However, unlike Lind, neither of these approaches provides insights
+on how vulnerabilities are distributed.
+
+%Much work has been done in analyzing system faults using techniques in
+%software engineering. For example,
+
+\textbf{Virtualization systems.}
+Lind incorporates a number of existing virtualization techniques, which are
+described in the following.
+%This section details some
+%of the significant work relevant to the development of today's virtual machines,
+%including Lind.
+
+\textit{System Call Interposition} (SCI) tracks all the system calls of processes such 
+that each system call can be modified or denied.
+Goldberg, et al. developed Janus \cite{Janus0:96, Janus:99}, 
+%a filtering-based SCI system. The key idea is to 
+which adopted a user-level ``monitor'' that filters system call requests based on
+user-specified policies. Garfinkel, et al. proposed a delegating architecture for secure system call interposition 
+called Ostia \cite{SCI-04}. Their system introduced emulation libraries in the user space
+to mediate sensitive system calls issued by the sandboxed process. SCI is similar to
+ the Lind isolation mechanism. However, SCI-based tools can easily be circumvented
+ if the implementation is not careful~\cite{Problems-SCI}.
+% However, a key difference is the actual execution
+%of a system call through Lind's SafePOSIX re-creation.
+%In SCI systems, there is no such re-creation module.
+
+\textit{Software Fault Isolation} (SFI) transforms a given program so that the
+program is guaranteed to satisfy a security policy.
+%is another widely-used technique to build virtual machines.
+Wahbe, et al. \cite{SFI:93} presented a software approach to implementing
+fault isolation within a single address space.
+Yee, et al. from Google developed Native Client (NaCl) \cite{NaCl-09},
+an SFI system for the Chrome browser that allows native executable code to run directly in a
+browser. As in Section 5, Lind adopts NaCl as a key component to ensure secure execution
+of binary code.
+
+\textit{Language-based virtualization.}
+Programming languages like Java, JavaScript, Lua~\cite{Lua}, and
+Silverlight~\cite{Silverlight} can provide safety in virtual systems by
+``translating" application commands into a native language.
+%
+Though many sandboxes implement the bulk of standard libraries in
+memory-safe languages like Java or C\#, flaws in this code can
+still pose a threat~\cite{JavaBugs, Java-Lessons}.
+Any bug or failure in a programming language virtual
+machine is usually fatal. In contrast, the main component of Lind
+is built using Repy, which is a programming language with a very small TCB.
+\yanyan{may explain why small TCB is safe.}
+
+\textit{OS virtualization}
+techniques include
+bare-metal hardware virtualization, such as VMware ESX Server, Xen~\cite{Xen-03},
+LXC~\cite{LXC}, BSD's jail, Solaris zones, and Hyper-V, and
+hosted hypervisor virtualization such as VMware
+Workstation, VMware Server, VirtualPC and VirtualBox.
+Security by isolation \cite{Qubes, Overshadow, SecureVM, HypSec}
+provides safe executing environments through containment for multiple
+user-level virtual environments sharing the same hardware.
+However, this approach is limited due to
+the large attack vectors against the hypervisors.
+
+\textit{Library OSes}
+allow applications to efficiently obtain the benefits of virtual machines
+by refactoring a traditional OS kernel into an application library.
+Porter, et al. developed Drawbridge \cite{Drawbridge-11},
+a library OS 
+%that uses picoprocesses (lightweight containers),
+%a security monitor (to enforce rules),
+%and a library OS 
+that presents a Windows persona for %a wide variety of
+Windows applications. Similar to Lind,
+it restricts access from usermode to host OS through 
+operations that pass through the security monitor.
+%\lois{How does this fit with Lind?}
+%
+%This approach brings many of the benefits of VM based temporal,
+%spatial and fault isolation properties to a per-process level.
+%
+Baumann, et al. presented Bascule \cite{Bascule}, an architecture for library OS extensions
+based on Drawbridge, allows application behavior to be customized by
+extensions loaded at runtime. The same team also developed Haven \cite{Haven},
+which uses a library OS to implement
+shielded execution of unmodified server applications
+in an untrusted cloud host.
+Tsai, et al. developed Graphene \cite{Graphene-14}, a library OS that
+executes both single and
+multi-process applications with low performance overheads.
+
+While library OSes rely extensively on
+the underlying kernels to perform system functions,
+Lind re-creates complex OS functions through memory-safe Repy
+code, relying on only a limited set of system functions from the Repy
+sandbox. Unlike Lind, Drawbridge, Bascule or Haven
+do not have the sandbox environment that properly contains
+buggy or malicious behavior. 

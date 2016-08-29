@@ -1,0 +1,36 @@
+\section{Discussion}
+\label{sec.limitation}
+
+One of our challenges in conducting this study was deciding where to place the
+limits of its scope.  To explore any one strategy
+in depth, we felt it was necessary to intentionally exclude consideration of
+a few other valid approaches. These choices may have placed some limitations on our results.
+
+\textbf{Limitation }
+A primary limitation of our work stems from our chosen criteria for locating
+bugs. At the beginning
+of our study, we identified a set of common, but seriously dangerous, zero-day bugs
+and then we looked for them in our obtained kernel traces. By looking only
+for a specific subset of bugs, we might have limited our
+ability to find a broader spectrum of kernel vulnerabilities. For example, bugs
+caused by a race condition, or that involve defects in the internal kernel data
+structures, or that require complex triggering conditions across multiple kernel
+paths, may not be immediately found using our metric. As we continue to refine
+our metric, we will look to also evolve our evaluation
+criteria to find and protect against more complex types of bugs.
+In the meantime, avoiding the triggering of this initial set of bugs
+through the use of our "Lock-in-Pop" design can address the security
+needs of a significant segment of users.
+
+\textbf{Future work.}
+While our experiments were limited to the Linux kernel 3.14.1, our future work
+will include testing its applicability to other operating systems, such as
+Windows and Mac OS. Since Lock-in-Pop is not dependent on the use of any
+specific hardware, we believe it can be adapted to these other
+widely-used systems.
+
+The other challenge facing wide-scale adoption of Lind is improving its
+performance in terms of bandwidth and other overhead factors. As addressed in
+Section 6.4, Lind does incur some performance overhead. Future work will focus on identifying
+the factors that contribute to this overhead, and the best ways to make Lock-in-Pop
+a cost-effective alternative to other virtual machine designs.

@@ -1,0 +1,18 @@
+\section{Conclusion}
+\label{sec.conclusion}
+
+In this paper, we propose a new security metric based on quantitative measures derived from
+the execution of kernel code when running user applications.
+After determining that fewer bugs exist in popular paths associated with frequently-used
+programs, we devise a new design for secure virtual machines, called \emph{Lock-in-Pop}.
+As the name implies, the design scheme locks out access to all
+kernel code except that found in paths frequently used by
+popular programs. We test the Lock-in-Pop idea by implementing a prototype system
+called Lind, that features a minimized TCB and prevents direct access to application
+calls from less-used, riskier paths.
+Instead, Lind supports complex system calls by securely re-creating
+essential OS functionalities inside a sandbox.
+In tests against VirtualBox, VMWare Workstation, Docker, LXC,
+QEMU, KVM and Graphene, Lind emerged as the most effective system in preventing
+zero-day Linux kernel bugs.
+All of the data and source code for this paper is available at the Lind website~\cite{Lind}.

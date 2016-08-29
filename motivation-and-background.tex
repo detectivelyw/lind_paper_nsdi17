@@ -1,0 +1,80 @@
+\section{Goals and Threat Model}
+\label{sec.motivation-and-background}
+
+\textbf{Goals.}
+Our goal is to design and build a secure virtualization system that allows
+untrusted programs to run on an unpatched and vulnerable host OS (Linux OS in
+this study), without triggering vulnerabilities that attackers could exploit.
+Developing effective defenses for the host OS kernel is essential as kernel code
+can expose privileged access to attackers that could lead to a system take-over.
+
+To combat the threat from zero-day vulnerabilities, untrusted programs are often executed in a 
+secure virtualization system, such as a guest OS virtual machine, a system call 
+interposition module, or a library OS system. Our intent is to
+build such a system capable of protecting not only
+an underlying host OS, but also any programs running in it. 
+%from both malicious attacks
+%and accidental triggering by applications.  \cappos{I do not know what
+%you mean to convey with the previous sentence.}
+In this section, we define the scope of our efforts. We also briefly note why 
+this study does not evaluate a few existing design schemes.
+
+\noindent
+\textbf{Threat model.}
+\cappos{This paragraph also is confusing to me.}
+\yanyan{please check my edits.}
+%We start by acknowledging that 
+When an attack attempt is staged
+on a host OS in a secure virtualization system,
+%Furthermore, %we anticipate that 
+the exploit could be done directly or indirectly.
+In a direct exploit, the attacker can access a portion of host OS's kernel
+that has a vulnerability. In an indirect exploit,
+the attacker takes advantage of a vulnerability in the virtualization system to 
+run arbitrary code, escapes the VM's containment and  
+makes system calls into the host OS. 
+The secure virtualization system design we propose
+in Section~\ref{sec.design} can prevent both types of attacks.
+
+
+Based on the goals mentioned above, we make the following assumptions about the
+potential threats our system could face:
+
+\begin{itemize}\setlength\itemsep{0em}
+
+\item The attacker possesses the knowledge about one or more unpatched 
+vulnerabilities in the host OS.
+
+\item The attacker is permitted to execute any code in the secure 
+virtualization system.
+
+\item If the attack program can trigger a vulnerability in any privileged 
+code, whether in the host OS or the secure virtualization system, the attacker 
+is then considered successful in compromising the system.
+
+\end{itemize}
+
+\noindent
+\textbf{Exclusion.}
+It should be noted that our study intentionally excludes %several existing
+%approaches to virtualization systems. We considered these techniques
+%out of scope due to differences in hardware and software requirements.
+%Primarily we chose to exclude 
+a comparison with solutions that do not run on top of a 
+full-fledged privileged operating system, such as 
+%a virtualization system that uses 
+a bare-metal hypervisor~\cite{Xen-03, VMWare-Server} or 
+hardware-based virtualization~\cite{IntelVT, keller2010nohype}. 
+While our techniques can potentially apply to those 
+systems, a direct comparison is not possible since they have different
+trusted computing bases.
+%would be difficult to perform due to 
+%tracing techniques.
+%These devices are dependent on the underlying hardware, and do not interact
+%with a privileged OS kernel. Such differences in both structure and function
+%make it difficult to directly compare these techniques to our proposed model.
+
+To build a system to resist zero-day vulnerabilities, we need to know which
+portions of the kernel may be more prone to exploitation. Our first step is to
+define and test a security metric that can quantitatively measure how bugs and
+vulnerabilities are distributed in the kernel.
