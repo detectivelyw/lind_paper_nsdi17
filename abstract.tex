@@ -9,9 +9,9 @@ In this paper, we use a new insight about where security bugs lie to devise a de
 run in VMs on top of a vulnerable host OS. 
 We begin by observing that a portion of the OS kernel, the kernel paths accessed
 by popular applications in everyday use, contains fewer security bugs than less-used paths. We
-leverage this observation to devise the \emph{Lock-in-Pop} design, which
+leverage this observation to devise the \lip design, which
 locks an application, and the POSIX implementation that services it, into
-accessing only the well-used popular portion of the kernel.  Using the \emph{Lock-in-Pop} model, we
+accessing only the well-used popular portion of the kernel.  Using the \lip model, we
 implement a virtual machine called Lind.
 %
 We compare Lind and seven other virtualization systems that were
