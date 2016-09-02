@@ -1,38 +1,24 @@
 \subsection*{Abstract}
-%A possible compromise of privileged code, such as that in the OS kernel, is a
-%daunting security threat. Severe vulnerabilities discovered in this code
-%have resulted in privilege escalation, denial of service, memory corruption and
-%other complications.
-Virtual machines are widely used in practice, in part for their ability to
+
+Virtual Machines(VMs) are widely used in practice, in part for their ability to
 isolate potentially untrusted code from the rest of a system.
-%Virtual machines have been developed to protect kernel code
-%through isolation.
 However, it is often possible to trigger zero-day flaws
-in the host OS from inside of a guest OS.  %Thus, the current
-%manner of constructing OS VMs does not provide strong resilience
-%Yet, when running it is possible to exploited in a number of VMs, indicating
-%that isolation alone is not sufficient protection.
+in the host Operating System(OS) from inside of a guest OS. 
+%
 In this paper, we use a new insight about where security bugs lie to devise a design to improve the security of applications
-run in OS VMs.
-  %document the development of a different type of virtual
-%machine to secure the OS kernel.
+run in VMs on top of a vulnerable host OS. 
 We begin by observing that a portion of the OS kernel, the kernel paths accessed
 by popular applications in everyday use, contains fewer security bugs than less-used paths. We
-leverage this observation to devise the Lock-in-Pop design, which
+leverage this observation to devise the \emph{Lock-in-Pop} design, which
 locks an application, and the POSIX implementation that services it, into
-accessing only the well-used popular portion of the kernel.  Using the Lock-in-Pop model, we
+accessing only the well-used popular portion of the kernel.  Using the \emph{Lock-in-Pop} model, we
 implement a virtual machine called Lind.
-%a very small trusted computing base. Complex functionalities in Lind are performed
-%within a sandbox, using a memory-safe programming language to re-create riskier system calls.
+%
 We compare Lind and seven other virtualization systems that were
 available at the release of Linux kernel version 3.14.1, and evaluate
 their effectiveness in containing the zero-day kernel bugs that have been discovered
 since then.
-%against zero day
-%bugs discovered in the Linux kernel version 3.14.1.
-%When Lind was tested against seven other virtual machines to see whether it would
-%   trigger any of 35 bugs examined in Linux kernel version 3.14.1, the threat of
-%    an attack was reduced to less than 3\%.
+%
 Our results show that it is substantially more difficult to trigger zero-day bugs in
-Lind (3\%) than existing systems like VirtualBox (40\%), VMWare Workstation
-(31\%), Docker (23\%), LXC (34\%), QEMU (14\%), KVM (14\%), and Graphene (23\%).
+Lind than existing systems like VirtualBox, VMWare Workstation, 
+Docker, LXC, QEMU, KVM, and Graphene.
