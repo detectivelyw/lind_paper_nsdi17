@@ -10,9 +10,9 @@ re-creation," requires rebuilding system functionality with new code. In this
 section, we show that both methods are limited in their ability to
 prevent attacks in the kernel.
 Using our metric described in Section~\ref{sec.metric},
-we then propose a new design scheme named ``Lock-in-Pop," which accesses only popular
- code paths through a very small trusted computer base, and utilizes
- functionality re-creation within a secure environment for complex implementations.
+we then propose a new design scheme named \lip, which accesses only popular 
+code paths through a very small trusted computer base, and utilizes 
+functionality re-creation within a secure environment for complex implementations.
 
 \subsection{System Call Interposition (SCI)}
 SCI is the long-standing idea behind sandbox systems like Janus
@@ -73,10 +73,11 @@ as ``functionality re-creation."
 \begin{figure}%[h]
 \centering
 \includegraphics[width=1.0\columnwidth]{diagram/Virtualization_Design_Model_02.png}
-\caption{\small Schematic of Functionality Re-creation System. \cappos{Can you
-tell me where different parts of Docker / VirtualBox go here?  I don't 
+\caption{\small Schematic of Functionality Re-creation System. 
+\cappos{Can you tell me where different parts of Docker / VirtualBox go here?  I don't 
 understand the difference between the System TCB and System Functionality 
 recreation.}
+\yiwen{This figure needs to be replaced. Working on it...}
 }
 \label{fig:design_functionality_reimplementation}
 \end{figure}
@@ -124,12 +125,12 @@ in which all code, including the complex part
 of the operating system interface, access only
 popular kernel paths through a small TCB. As it ``locks" all functionality
 requests into only the ``popular" paths, we dubbed the
-design ``Lock-in-Pop."
+design \lip.
 
 \begin{figure}%[h]
 \centering
 \includegraphics[width=.9\columnwidth]{diagram/Virtualization_Design_Model_01.png}
-\caption{\small ``Lock-in-Pop''System ensures safe execution of untrusted user code
+\caption{\small \lip system ensures safe execution of untrusted user code
 despite existing potential zero-day bugs in the OS kernel.}
 \label{fig:design_safe_reimplementation}
 \end{figure}
@@ -140,14 +141,14 @@ the sandbox kernel and its access to the OS kernel is restricted
 functions that require contact with the OS kernel is re-created using
 memory-safe code and is contained within a sandbox. This approach has advantages
 over others that require modifications to
-the OS kernel (Section {\ref{sec.metric}). The isolation provided by placing
-``Lock-in-Pop'' in the userspace is also an added protection over earlier designs.
- Lock-in-Pop does not
+the OS kernel (Section {\ref{sec.metric}). The isolation provided by placing 
+\lip in the userspace is also an added protection over earlier designs.
+\lip does not
 expose kernel privileges that could allow attacks
 in the underlying system and any applications in the userspace.
 
 As shown in Figure \ref{fig:design_safe_reimplementation},
-``Lock-in-Pop'' constructs a set of safe system functions within
+\lip constructs a set of safe system functions within
 the library OS sandbox.
 The sandbox responds to system call requests, if the requests are granted, and
 returns results to the user code.
