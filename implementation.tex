@@ -1,14 +1,13 @@
 \section{Implementation of Lind}
 \label{sec.implementation}
 
-To test our Lock-in-Pop design, we used it to implement a secure virtual machine
+To test our \lip design, we used it to implement a secure virtual machine
 called Lind\footnote{\scriptsize An old English word for a shield constructed from two layers of
 linden wood, providing strength in a lightweight form, the name is appropriate for
 a virtual machine that adapts two technologies\textendash
 yet still protects vulnerable OS kernel code from exploitation by
 untrusted user programs.}.
-Lock-in-Pop utilizes a
-computational module and a library OS. In Lind, Native Client (NaCl) serves as the former,
+\lip utilizes a computational module and a library OS. In Lind, Native Client (NaCl) serves as the former,
 while Restricted Python (Repy), with a POSIX interface built into it, performs the
 task of the latter.
 What follows is a brief description of these components and how they were integrated
@@ -107,7 +106,7 @@ to the Repy sandbox. The re-created system call marshals the result and
 returns it back to NaCl. Eventually, the result is returned as the appropriate
 native type to the calling program.
 
-The file system API in Lock-in-Pop needs only
+The file system API in \lip needs only
 to provide functionality of writing data to storage.
 %\yanyan{why only discuss file system?
 %how about network, threading, etc?}
@@ -120,8 +119,8 @@ The system API safe re-creation is a set of more complicated system calls
 derived from functions in the sandbox kernel.
 It serves as a mediator between the user code
 and the OS kernel. The re-creation is safe
-because the reconstructed calls are isolated in a sandbox, and its code is written
- in a memory-safe programming language.
+because the reconstructed calls are isolated in a sandbox, and its code is written 
+in a memory-safe programming language.
 
 Here is an example of how this re-creation would work with the symbolic link function. 
 Instead of relying on the underlying kernel to create symbolic links between real files 
@@ -133,8 +132,8 @@ to the host OS kernel.
 Therefore, attackers will not be able to leverage a bug within the symbolic link function to 
 exploit the host kernel.  
 
-The Lind design offers a promising new approach to OS kernel code protection.
- To determine if the ideas behind Lind were valid, we
-designed a multi-step study to compare its security performance against a number
- of existing virtualization systems. Details of the study and its results are presented
- in the following section.
+The Lind design offers a promising new approach to OS kernel code protection. 
+To determine if the ideas behind Lind were valid, we 
+designed a multi-step study to compare its security performance against a number 
+of existing virtualization systems. Details of the study and its results are presented 
+in the following section.
