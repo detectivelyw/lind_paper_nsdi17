@@ -3,16 +3,16 @@
 
 To evaluate Lind's effectiveness,
 %in containing untrusted code and protecting the OS kernel,
-we compared its performance against seven existing
-virtualization systems -- VirtualBox, VMWare
-Workstation, Docker, LXC, QEMU, KVM and Graphene.
+we compared its performance against three existing
+virtualization systems -- Docker, LXC, and Graphene.
 %This section describes
 %the purpose and setup of our experiments, and presents and discusses our results.
-We chose these seven systems because they are representative of the most
-widely-used current design models.
-VirtualBox and VMWare Workstation are commercial OSVM products, while
-LXC and KVM are designed for the Linux kernel. Docker, QEMU, and Graphene are well-known open
-source projects. Lastly, we also tested Native Linux to serve as a
+We chose these three systems because they are representative of the most
+widely-used current design models. 
+LXC is the well-known Linux container designed for the Linux kernel. 
+Docker is a widely-used container. 
+And Graphene is an open source library OS. 
+Lastly, we also tested Native Linux to serve as a
 baseline for comparison.
 %
 Our tests were designed to answer four fundamental questions:
@@ -62,7 +62,7 @@ For the remaining, we used the Trinity system call fuzzer
 By comparing the code reached during fuzzing with the lines of code affected by security patches, 
 we were able to identify an additional 26 bugs that could be triggered.
 
-We then evaluated the protection afforded by eight virtualization systems (including Lind) by attempting to trigger the 35 bugs from inside each.
+We then evaluated the protection afforded by four virtualization systems (including Lind) by attempting to trigger the 35 bugs from inside each.
 The host system for each test ran version of Linux 3.14.1 with gcov instrumentation enabled.
 For the nine bugs that we could directly trigger, we ran the proof of concept exploit inside the guest.
 For the other 26, we ran the Trinity fuzzer inside the guest, exercising each system call 1,000,000 times with random inputs.
@@ -85,210 +85,179 @@ indicating that the guest could have triggered the bug.
 \scriptsize
 \centering
 
-\begin{tabular}{|p{1.7cm}|l|l|p{1cm}|p{1cm}|p{.8cm}|p{1cm}|p{.8cm}|p{1cm}|p{.8cm}|}\hline
+\begin{tabular}{|p{1.7cm}|l|p{1cm}|p{.8cm}|p{1cm}|p{.8cm}|}\hline
 
-\multirow{2}{1.7cm}{\bf Vulnerability}    &  \multirow{2}{.7cm}{\bf Native Linux}  &  \multirow{2}{*}{\bf VirtualBox}
-&  \multirow{2}{.7cm}{\bf VMWare}
+\multirow{2}{1.7cm}{\bf Vulnerability}    &  \multirow{2}{.7cm}{\bf Native Linux} 
  & \multirow{2}{1cm}{\bf Docker} & \multirow{2}{1cm}{\bf LXC} &
-\multirow{2}{1cm}{\bf QEMU} & \multirow{2}{1cm}{\bf KVM} &
 \multirow{2}{1cm}{\bf Graphene} & \multirow{2}{1cm}{\bf Lind} \\
-& & & & & & & & & \\
+& & & & & \\
 \hline
 
- CVE-2015-5706 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\ding{55}}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+ CVE-2015-5706 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+\multirow{1}{1cm}{{\color{red}\ding{51}}} & 
+\multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  \\
 
- CVE-2015-0239 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\ding{55}}} &
+ CVE-2015-0239 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-9584 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
- \ding{55}& \ding{55} &
+ CVE-2014-9584 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-9529 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}}  &
-\ding{55}  & \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\ding{55}& \ding{55} &
+ CVE-2014-9529 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-9322 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}}  &
-\ding{55}  & \multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\ding{55}}} &
+ CVE-2014-9322 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+\multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
 \\
 
- CVE-2014-9090 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-9090 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-8989 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\ding{55}}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+ CVE-2014-8989 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+\multirow{1}{1cm}{{\color{red}\ding{51}}} & 
+\multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  \\
 
- CVE-2014-8559 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-8559 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-8369 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-8369 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-8160 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\ding{55} & \ding{55} &
+ CVE-2014-8160 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-8134 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\ding{55} & \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
+ CVE-2014-8134 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+\multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
 \\
 
- CVE-2014-8133 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}}  &
-\ding{55}  & \ding{55} & \ding{55} &
-\ding{55} & \ding{55} &
+ CVE-2014-8133 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \ding{55} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-8086 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+ CVE-2014-8086 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\ding{55} & \ding{55} &
 \ding{55} & \ding{55}  \\
 
- CVE-2014-7975 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-7975 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-7970 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-7970 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-7842 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-7842 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-7826 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \ding{55} & \ding{55}  &
-\ding{55} & \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
+ CVE-2014-7826 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \ding{55}  &
+\multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
 \\
 
- CVE-2014-7825 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \ding{55} & \ding{55} &
-\ding{55} & \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
+ CVE-2014-7825 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
+ \ding{55} & \ding{55} &
+\multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
 \\
 
- CVE-2014-7283 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-7283 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-5207 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-5207 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-5206 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
-\multirow{1}{1cm}{{\ding{55}}}  & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+ CVE-2014-5206 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\ding{55} & \ding{55} &
 \ding{55}  & \ding{55}
 \\
 
- CVE-2014-5045 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-5045 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-4943 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-4943 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-4667 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
- \ding{55} & \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}  \\
+ CVE-2014-4667 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \ding{55} &
+ \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}  \\
 
- CVE-2014-4508 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-4508 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-4171 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\ding{55}}} &
-\multirow{1}{1cm}{{\ding{55}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+ CVE-2014-4171 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+\multirow{1}{1cm}{{\color{red}\ding{51}}} & 
+\multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}}  \\
 
- CVE-2014-4157 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-4157 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-4014 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
-\multirow{1}{1cm}{{\ding{55}}}  & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
+ CVE-2014-4014 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
+ \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\ding{55} & \ding{55} &
 \ding{55}  & \ding{55}
 \\
 
- CVE-2014-3940 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}}  &
-\ding{55}  & \multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\ding{55} & \ding{55} &
+ CVE-2014-3940 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-3917 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & {\ding{55}}  &
-\ding{55}  & \ding{55} & \ding{55} &
-\ding{55} & \ding{55} &
+ CVE-2014-3917 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \ding{55} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-3153 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
-  \ding{55}  & \ding{55} & \ding{55} &
-  \ding{55} & \ding{55} &
+ CVE-2014-3153 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \ding{55} &
   \ding{55}  & \ding{55}  \\
 
- CVE-2014-3144 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-3144 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-3122 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-3122 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-2851 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
+ CVE-2014-2851 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-0206 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & \ding{55}  &
- \ding{55}  & \ding{55} & \ding{55} &
- \ding{55} & \ding{55} &  \ding{55}  & \ding{55}  \\
+ CVE-2014-0206 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ \ding{55} & \ding{55} &
+ \ding{55}  & \ding{55}  \\
 \hline
 
- {\bf Vulnerabilities Triggered} & \multirow{2}{1cm}{\bf 35/35 (100\%)} & {\bf 0/35 (0.0\%)} &
- {\bf 0/35 (0.0\%)}  & {\bf 8/35 (22.9\%)} & {\bf 12/35 (34.3\%)} & {\bf 0/35 (0.0\%)} & {\bf 0/35 (0.0\%)} &
+ {\bf Vulnerabilities Triggered} & \multirow{2}{1cm}{\bf 35/35 (100\%)} & {\bf 8/35 (22.9\%)} & 
+ {\bf 12/35 (34.3\%)} &
  {\bf 8/35 (22.9\%)}  & {\bf 1/35 (2.9\%)}  \\
 \hline
 \end{tabular}
 
 \caption {\small Linux Kernel Bugs, and Vulnerabilities in Different Virtualization Systems
 ({\color{red}\ding{51}}: vulnerability triggered;
-{\color{blue}\ding{51}+g}: vulnerability triggered with guest additions; \ding{55}: vulnerability
-not triggered).
-\yiwen{This table may need to be replaced. I only keep it here for now so that we know what the new results look like.}}
+\ding{55}: vulnerability not triggered).}
 
 \label{table:trigger_vulnerabilities}
 \end{table*}
@@ -298,11 +267,8 @@ not triggered).
 We found that a substantial number of bugs could be triggered in existing
 virtualization systems, as shown in Table \ref{table:trigger_vulnerabilities}.
 All (100\%) bugs were triggered in Native Linux,
-while the other programs had lower rates: 0/35 (0.0\%) in
-VirtualBox,
-0/35 (0.0\%)  in VMWare Workstation, 8/35 (22.9\%)  in Docker,
-12/35 (34.3\%)  in LXC, 0/35 (0.0\%)  in QEMU, 0/35 (0.0\%)  in KVM,
-and 8/35 (22.9\%) bugs in Graphene.
+while the other programs had lower rates: 8/35 (22.9\%)  in Docker,
+12/35 (34.3\%)  in LXC, and 8/35 (22.9\%) bugs in Graphene.
 In comparison, only 1 out of 35 bugs  (2.9\%) was triggered in Lind.
 
 Our initial results % as illustrated by the above case studies,
@@ -310,9 +276,6 @@ suggest that bugs are usually triggered by complex system calls, or basic system
 with complicated or rarely used flags. The \emph{Lock-in-Pop} design, and thus Lind,
 provides strictly controlled access to the kernel, and so, poses
 the least risk.
-
-\yiwen{The new results are not entirely in favor of our arguments. We need to do something about this. 
-We may want to present the results in a different way, or maybe some extra evaluation tests are necessary.}
 
 \subsection{Comparison of Kernel Code Exposure in Different Virtualization
 Systems}
@@ -332,15 +295,6 @@ Systems}
   Graphene & 8 & 95.5K & 62.2K & 33,3K \\
   \hline
   Lind & 1 & 70.3K & 70.3K & 0 \\
-  \hline
-  VirtualBox & 0 & 153.0K & 71.1K & 81.9K \\
-  \hline
-  \multirow{2}{1.5cm}{VMWare Workstation} & \multirow{2}{*}{0} &
-  \multirow{2}{*}{140.9K} & \multirow{2}{*}{70.7K} &\multirow{2}{*}{70.2K} \\
-  & & & & \\   \hline
-  QEMU & 0 & 136.1K & 83.3K & 52.8K \\
-  \hline
-  KVM & 0 & 146.4K & 83.4K & 63K \\
   \hline
 \end{tabular}
 \caption{\small Reachable kernel trace analysis for different virtualization
@@ -390,10 +344,9 @@ This is because they have
 more dependence on complex system calls, and
 allow extensive use of complicated flags. For example,
 Graphene provides a complex system call API that allows
-\texttt{fork()} and \texttt{signals}, and can access many risky lines of code.
-VirtualBox, and therefore VMWare Workstation, and Docker, have even larger
-codebases and more complicated system functions. They allow
-rarely used flags, such as \texttt{O\_TMPFILE}, \texttt{O\_NONBLOCK},
+\texttt{fork()} and \texttt{signals}, and can access many risky lines of code. 
+Docker has an even larger codebase and more complicated system functions. 
+It allows rarely used flags, such as \texttt{O\_TMPFILE}, \texttt{O\_NONBLOCK},
 and \texttt{O\_DSYNC}, which can reach potentially dangerous lines
 of code.
 
