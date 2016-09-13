@@ -1,9 +1,11 @@
 \subsection*{Abstract}
 
-Virtual Machines(VMs) are widely used in practice, in part for their ability to
-isolate potentially untrusted code from the rest of a system.
+Virtual machines (VMs) have been widely used in practice, in part for their ability to
+isolate potentially untrusted code from the rest of a system. 
+Recently, library OSes and containers become promising approaches.  
+%
 However, it is often possible to trigger zero-day flaws
-in the host Operating System(OS) from inside of a guest OS. 
+in the host Operating System(OS) from inside of such virtualized systems. 
 %
 In this paper, we use a new insight about where security bugs lie to devise a design to improve the security of applications
 run in VMs on top of a vulnerable host OS. 
@@ -12,13 +14,13 @@ by popular applications in everyday use, contains fewer security bugs than less-
 leverage this observation to devise the \lip design, which
 locks an application, and the POSIX implementation that services it, into
 accessing only the well-used popular portion of the kernel.  Using the \lip model, we
-implement a virtual machine called Lind.
+implement a virtual machine called Lind. 
+\yiwen{Maybe we should call Lind a library OS.}
 %
-We compare Lind and seven other virtualization systems that were
+We compare Lind and three other virtualized systems that were
 available at the release of Linux kernel version 3.14.1, and evaluate
 their effectiveness in containing the zero-day kernel bugs that have been discovered
 since then.
 %
-Our results show that it is substantially more difficult to trigger zero-day bugs in
-Lind than existing systems like VirtualBox, VMWare Workstation, 
-Docker, LXC, QEMU, KVM, and Graphene.
+Our results show that Lind can prevent the triggering of zero-day kernel bugs significantly better 
+than existing library OS Graphene, and containers such as Docker and LXC. 
