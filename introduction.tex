@@ -26,9 +26,8 @@ agencies, thus rendering millions of devices vulnerable.
 %developers. 
 %
 
-In theory, running a program in an operating system virtual machine(OSVM), such as 
-VirtualBox, VMWare workstation, and Docker should prevent it from triggering 
-zero-day bugs in the host OS kernel.  However, to be 
+In theory, running a program in a virtual machine (VM) like Docker and LXC should 
+prevent it from triggering bugs in the host OS kernel.  However, to be 
 effective, this isolation must function in two cases. First, the OSVM's 
 software must not contain bugs that allow the program to escape the 
 OSVM's containment and interact directly with the host OS. 
@@ -46,7 +45,7 @@ working as designed but without knowledge of a flaw in the OSVM itself.
 The reason this occurs is that many of the system calls made within an OSVM eventually 
 result in system calls in the host OS (e.g., network I/O from the guest
 OSVM results in network I/O by the host OS kernel). If one of these paths in
-the OS kernel contains a zero-day security bug, the malicious program
+the OS kernel contains a zero-day security bug, the attacker 
 may be able to trigger and exploit it.
 
 %aspect of this isolation is preventing the program from triggering bugs
@@ -69,7 +68,8 @@ may be able to trigger and exploit it.
 With this paper, we move one step closer to designing secure OSVM systems that are 
 resilient to zero-day flaws. 
 We start with the proposition that kernel code found in popular paths, associated with frequently-used programs,
-has less potential risk of bugs than code in less-used parts of the kernel.
+has less potential risk of bugs than code in less-used parts of the kernel. 
+Our intuition behind this proposition is that popular paths are the first round in software testing, and are well examined. 
 We performed a quantitative analysis of resilience 
 to flaws in two versions of the Linux kernel (Linux kernel version 3.13.0 and version 3.14.1), and
 found that about 3\% of the bugs were present in popular code paths,
@@ -83,14 +83,14 @@ greatly increase resilience to zero-day bugs in the host OS kernel.
 %we found them less effective at predicting the location of zero-day bugs.
 
 Guided by this knowledge, we propose a new design scheme for a secure virtual machine that
-accesses only the popular code paths through a very small trusted computing base.
+accesses only popular code lines through a very small trusted computing base.
 We name it \lip, as it locks kernel access to only code
 associated with popular programs. %However, the popular kernel functionality is
 %not sufficient to implement all of the system call functionality needed by 
 %applications.  
 However, there are many system calls outside of the popular paths that need to 
 be supported to run applications~\cite{tsai2016study}.  Our second
-observation in \lip is to re-create needed-but-risky OSVM functionalities
+observation in \lip is to re-create needed-but-risky OSVM functionality
 (e.g., POSIX) in a sandbox that only allows access to popular kernel paths. 
 In this way a bug inside of the OSVM implementation does not result in a system compromise
 so long as the minimal sandbox remains uncompromised.
@@ -112,13 +112,13 @@ It also passes system calls invoked by the program to the operating system inter
 SafePOSIX re-creates the broader POSIX functionalities needed by applications.
 SafePOSIX does this while being contained within the Repy sandbox, which
 provides an API that only allows access to popular kernel paths. 
-The small (8K LOC) sandbox kernel of Repy contains flaws in SafePOSIX 
+The small (8K LOC) sandbox kernel of Repy isolates flaws in SafePOSIX 
 to prevent them from allowing direct access to the host OS kernel.
 
 To test Lind's effectiveness, we replicated 35 kernel bugs that were
 discovered in the Linux kernel version 3.14.1.  We attempted to trigger those
-bugs in seven other virtualized environments,
-including VirtualBox, VMWare Workstation, Docker, LXC, KVM, QEMU, and Graphene.
+bugs in three other virtualized environments,
+including Docker, LXC, and Graphene.
 Our results show that applications in Lind were substantially least likely to trigger 
 kernel bugs.
 
@@ -155,12 +155,6 @@ and test its effectiveness against seven other security systems. We find that
 Lind exposes 5-14x fewer kernel code paths with bugs than prior production and
 academic systems.
 \end{itemize}
-
-\cappos{I almost feel we need a diagram to `map' some parts of the paper.
-Perhaps we should show something like Figure 4 (but see my comments) and
-label where our analysis / description focuses.  Right now, there is enough
-confusion between popular paths / sandboxed POSIX that it may make the paper
-hard to follow.}
 
 The remainder of this paper is organized as follows.
 Section \ref{sec.motivation-and-background} presents the scope of our study 
