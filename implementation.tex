@@ -23,7 +23,7 @@ This prevents the majority of applications from performing system calls
 or executing arbitrary instructions.
 Instead, the application will call into a small privileged
 part of the NaCl TCB that forwards system calls, usually to the OS for
-processing. To build Lind, we changed the NaCl TCP to
+processing. To build Lind, we changed the NaCl TCB to
 forward these calls to the library OS that we call SafePOSIX (details below).
 
 \textbf{Seattle's Repy.}

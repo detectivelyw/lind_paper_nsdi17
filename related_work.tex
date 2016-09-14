@@ -76,7 +76,7 @@ Wahbe, et al. \cite{SFI:93} presented a software approach to implementing
 fault isolation within a single address space.
 Yee, et al. from Google developed Native Client (NaCl) \cite{NaCl-09},
 an SFI system for the Chrome browser that allows native executable code to run directly in a
-browser. As in Section 5, Lind adopts NaCl as a key component to ensure secure execution
+browser. As discussed in Section 5, Lind adopts NaCl as a key component to ensure secure execution
 of binary code.
 
 \textit{Language-based virtualization.}
@@ -134,6 +134,6 @@ While library OSes rely extensively on
 the underlying kernels to perform system functions,
 Lind re-creates complex OS functions through memory-safe Repy
 code, relying on only a limited set of system functions from the Repy
-sandbox. Unlike Lind, Drawbridge, Bascule or Haven
+sandbox. Drawbridge, Bascule or Haven
 do not have the sandbox environment that properly contains
-buggy or malicious behavior. 
+buggy or malicious behavior, while Lind has the sandbox environment which can provide better security. 
