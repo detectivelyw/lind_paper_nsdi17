@@ -65,9 +65,7 @@ Systems such as  Drawbridge \cite{Drawbridge-11},
  Bascule \cite{Bascule}, and Graphene \cite{Graphene-14} can
 provide richer functionality and run more complex programs than most systems built
 with SCI alone because they have their own
-interfaces and libraries. Some virtualization
-systems, such as OS VM systems VirtualBox, and VMWare Workstation, even have the
-full functionality of an OS re-created in their codebase. We label such a design
+interfaces and libraries. We label such a design
 as ``functionality re-creation."
 
 \begin{figure}%[h]
@@ -111,10 +109,6 @@ API allowed local users to
 gain privilege to execute arbitrary code in the host
 OS, even shellcode to access the kernel of the host OS~\cite{CVE-2008-2100}.
 
-Even operations that are considered
-legal and harmless in the guest OS may open up risky system call paths in the underlying
-host. This type of problem can be fatal,
-as it can reach and trigger vulnerabilities in the underlying kernel.
 
 \subsection{Lock-in-Pop: Staying on the Beaten Path }
 As discussed above, a weakness of the previous approaches is the inevitable contact
@@ -155,7 +149,8 @@ returns results to the user code.
 It is comprised of two parts: a sandbox kernel that provides access to basic, but critical
 system calls, and a safely re-created API to implement more
 complex calls, such as a symbolic link system call.
-The sandbox kernel forms the only TCB of our library OS, and is kept
+The sandbox kernel forms the only TCB of our virtual machine 
+\yiwen{should we call Lind library OS?}, and is kept
 extremely small and simple so that it is easy to verify its security.
 The sandbox code provides an API that performs a few critical system calls with
 the most basic parameters, such as writing data to the file system
@@ -171,5 +166,5 @@ provided to untrusted user code.
 
 %With the system functionality safe reimplementation, unmodified user code is able to run on top of our designed system.
 It is important to note that our design does not rely on any specific technique or tool, and it is possible
-to choose from several different techniques that fit specific security requirements.
-The following section describes one implementation of our design called Lind.
+to choose from several different techniques that fit specific security requirements. 
+In the following section, we present and describe the prototype system Lind, using our new design. 
