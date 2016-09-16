@@ -34,14 +34,13 @@ OSVM's containment and interact directly with the host OS.
 Unfortunately, these issues are very common in OSVMs (Virtualbox reports more than 40 such 
 vulnerabilities~\cite{Virtualbox-Vulnerabilities} and over 100 bugs have 
 been found in VMware Workstation~\cite{VMWare-Vulnerabilities}).  While it is understandable that
-bugs occur in the large amount of complex code needed for such a 
-system, these flaws not only render the complex code unusable, but 
-leave tens of millions of user machines at risk~\cite{linux-0day}.
+bugs occur in the large amount of complex code needed for such a system, these 
+flaws leave tens of millions of user machines at risk~\cite{linux-0day}.
 
 The other key situation where isolation is not effective is when a malicious 
 program  can access a portion of the host OS's kernel that contains a 
-zero-day flaw.  This typically occurs even while the containment of the OSVM is 
-working as designed but without knowledge of a flaw in the OSVM itself. 
+zero-day flaw.  This may occurs even while the containment of the OSVM is 
+working as designed.
 The reason this occurs is that many of the system calls made within an OSVM eventually 
 result in system calls in the host OS (e.g., network I/O from the guest
 OSVM results in network I/O by the host OS kernel). If one of these paths in
@@ -69,7 +68,9 @@ With this paper, we move one step closer to designing secure OSVM systems that a
 resilient to zero-day flaws. 
 We start with the proposition that kernel code found in popular paths, associated with frequently-used programs,
 has less potential risk of bugs than code in less-used parts of the kernel. 
-Our intuition behind this proposition is that popular paths are the first round in software testing, and are well examined. 
+Our intuition behind this proposition is that bugs in the popular paths are 
+more frequently found in software testing, as they are frequently executed by
+diverse pieces of software.
 We performed a quantitative analysis of resilience 
 to flaws in two versions of the Linux kernel (Linux kernel version 3.13.0 and version 3.14.1), and
 found that about 3\% of the bugs were present in popular code paths,
@@ -119,7 +120,7 @@ To test Lind's effectiveness, we replicated 35 kernel bugs that were
 discovered in the Linux kernel version 3.14.1.  We attempted to trigger those
 bugs in three other virtualized environments,
 including Docker, LXC, and Graphene.
-Our results show that applications in Lind were substantially least likely to trigger 
+Our results show that applications in Lind were substantially less likely to trigger 
 kernel bugs.
 
 In summary, the main contributions of this paper are as follows:
