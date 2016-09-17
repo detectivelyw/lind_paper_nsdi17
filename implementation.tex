@@ -2,49 +2,54 @@
 \label{sec.implementation}
 
 To test our \lip design, we used it to implement a secure virtual machine
-called Lind\footnote{\scriptsize Lind is an old English word for a 
-shield constructed from two layers of linden wood.  }.
-\lip utilizes a computational module and a library OS. In Lind, Native Client (NaCl) serves as the former,
-while Restricted Python (Repy), with a POSIX interface built into it, performs the
-task of the latter.
-What follows is a brief description of these components and how they were integrated
-into Lind, followed by a brief example of how the system works.
+called Lind\footnote{\scriptsize Lind is an Old English word for a shield
+constructed from two layers of linden wood.}.  Lind is divided into a
+\emph{computational module} that enforces software fault isolation (SFI) and a
+library OS that safely reimplements OS functionality needed by user
+applications.  We use a slightly modified version of Native Client
+(NaCl)~\cite{NaCl-09} for the computational module; the library OS is
+implemented using Restricted Python (Repy)~\cite{Repy-10}. Finally, to support
+complex user applications without exposing potentially unsafe kernel paths, we
+provide a safe POSIX implementation, built on top of Repy.
+
+In this section we provide a brief description of these components and how they
+were integrated into Lind, followed by an example of how the system works.
 
 \subsection{Primary Components}
 
-\textbf{Native Client.}
+\paragraph{Native Client.}
 We use NaCl to isolate the computation of the user application
 from the kernel. NaCl allows Lind to work on most types of legacy code.
 It compiles the programs to produce a binary with software fault isolation.
-This prevents the majority of applications from performing system calls
+This prevents applications from performing system calls
 or executing arbitrary instructions.
-Instead, the application will call into a small privileged
-part of the NaCl TCB that forwards system calls, usually to the OS for
-processing. To build Lind, we changed the NaCl TCB to
-forward these calls to the library OS that we call SafePOSIX (details below).
+Instead, the application will call into a small, privileged
+part of NaCl that forwards system calls. In NaCl's original implementation,
+these calls are usually forwarded to the host OS kernel. To build Lind, we
+modified NaCl to instead forward these calls to our library OS, SafePOSIX
+(described in detail below).
 
-\textbf{Seattle's Repy.}
-To build an API to access the safe parts of the underlying kernel, we need
-two things. First, we need a restricted sandbox that isolates computation
-and only allows access to commonly used kernel paths.  We used
-Seattle's Repy~\cite{Repy-10} sandbox to perform this task.
-Second, we chose the widely accepted standard POSIX interface to
-provide complex system functions to user programs. However, to enforce isolation,
-we needed to modify our POSIX implementation.
+\brendan{We don't seem to actually say more than about one sentence about
+SafePOSIX below before launching into the example. Maybe we should fix that?}
 
-\textit{The Repy Sandbox Kernel.}
-As the only piece of code in contact with the system call paths of the TCB,
-the sandbox kernel's security is of paramount concern.
-We used Seattle's Repy system API due to its tiny sandbox kernel
-(comprised of around 8K LOC), and its ability to provide straightforward
-access to the minimal set of system call API needed to build general
-computational functionality. Repy allows
-access only to the popular portions of the OS kernel through 33 basic API
-functions, including 13 network functions, 6 file functions, 6 threading functions,
-and 8 miscellaneous functions (Table \ref{table:RepyKernel}) 
-~\cite{Repy-10, RepyKernel}. 
-The code is written using style guidelines designed to ease security auditing 
-of the code~\cite{style}.
+\paragraph{Seattle's Repy.}
+
+To build an API to access the safe parts of the underlying kernel while
+supporting existing applications, we need two things. First, we need a
+restricted sandbox that only allows access to commonly used kernel paths. We
+used Seattle's Repy~\cite{Repy-10} sandbox to perform this task. Second, we
+implemented the widely accepted standard POSIX interface on top of Repy to
+provide complex system functions to user programs.
+
+Because the sandbox kernel is the only code in direct contact with the host
+system calls, it should be small (to make it easy to audit) while providing
+primitives that can be used to build more complex functionality.
+We used Seattle's Repy system API due to its tiny (around 8K LOC) sandbox
+kernel , and its minimal set of system call APIs needed to build general
+computational functionality. Repy allows access only to the popular portions of
+the OS kernel through 33 basic API functions, including 13 network functions, 6
+file functions, 6 threading functions, and 8 miscellaneous functions (Table
+\ref{table:RepyKernel})~\cite{Repy-10, RepyKernel}.
 
 \begin{table}
 \centering
@@ -68,23 +73,14 @@ virtualnamespace.evaluate, getresources, and getlasterror.}  \\ \hline
     \label{table:RepyKernel}
 \end{table}
 
-The Repy sandbox code provides containment for the SafePOSIX implementation.
-Repy has been audited by a professional penetration tester and, since 2010,
-the Seattle testbed has operated a bug bounty program for security flaws in the
-sandbox~\cite{seattle}.
-The code is deployed in daily use across thousands of devices, and has been examined by
-hundreds of parties. Despite the discovery of bugs in other parts of the 
-system, to date no security flaws have been found in the sandbox
-kernel. While there certainly could be bugs in the sandbox kernel, having a 
-small, auditable piece of code helps to reduce the risk of such occurrences.
 
 \subsection{Enhanced Safety in Call Handling with SafePOSIX Re-creation}
 
-The kernel interface is extremely rich and hard to protect.
+The full kernel interface is extremely rich and hard to protect.
 The dual sandbox Lock-in-Pop design used to build Lind provides enhanced
 safety protection through both isolation and a POSIX interface that
-reformulates risky system calls to
-provide sufficient API for legacy applications, with minimal impact on the kernel.
+reimplements risky system calls to
+provide full-featured API for legacy applications, with minimal impact on the kernel.
 
 \textbf{An example of system call execution.}
 In Lind, a system call issued from user code is
