@@ -65,16 +65,14 @@ software, communicated with friends and family, and so on, using this
 system.  Software was installed as needed.
 %
 With the two strategies, we obtained a profile of the lines of
-kernel code (publicly available at~\cite{Lind}) that defined our
-popular kernel paths.
+kernel code that defined our popular kernel paths.  We make this trace 
+publicly available to other researchers~\cite{Lind}, so they may analyze or
+replicate our results.
 
 \textbf{Reachable kernel paths.}
 There are certain paths in the kernel, such as unloaded drivers, that are
 unreachable and unused.
-To ensure that our analysis reflects bug distribution in all reachable paths,
-\cappos{I'm not sure why this matters}
-we used two techniques to further examine the reachable lines of
-code in the kernel. First,
+To understand which paths are unreachable, we used two techniques.  First,
 we performed system call fuzzing with the Trinity
 system call fuzz tester~\cite{Trinity}.
 %These included 16 child processes
@@ -132,9 +130,9 @@ We assume that kernel bugs appear at an average rate proportional to the
 number of lines of kernel code.
 %and different kernel parts may have different rates that bugs appear.
 %independently of the time since the last bug occurrence.
-Therefore, the rate of defect occurrence per LOC
-follows a Poisson distribution~\cite{Poisson-distribution}.
-This is consistent with the work of Mayer, et. al.~\cite{mayer1989probability}.
+Therefore, consistent with prior researchk~\cite{mayer1989probability}, the 
+rate of defect occurrence per LOC follows a Poisson 
+distribution~\cite{Poisson-distribution}.
 %who proposed a probability model for characterizing the relationship
 %between discrete data set.
 The premise we tested is that bugs occur at different rates in different
@@ -153,10 +151,9 @@ At a significance level of $\alpha=0.01$, the test was significant at
 $\rho=0.0015$, rejecting the null-hypothesis.
 The test also reported a 95\% confidence that $\lambda_A / \lambda_B
 \in [0.002, 0.525]$. This indicates that the ratio between the bug rates is well
-below 1. Since $B$ has a bug rate much larger than that of $A$, it shows
-that $B$ is the risky set containing more bugs.
+below 1. Since $B$ has a bug rate much larger than that of $A$, 
 %
-This result shows that
+this result shows that
 popular paths have a much lower bug rate than unpopular ones.
 %which means that the popular kernel paths
 %contain much fewer bugs. Our metric is thus effective in locating bugs in the Linux kernel.
