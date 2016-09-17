@@ -322,6 +322,8 @@ kernel traces. This helps us understand the potential risks a virtualization sys
 may pose based upon how much access it allows to the kernel code.
 All experiments were conducted under Linux kernel 3.14.1.
 
+\brendan{How does the fuzzing work with Lind? I thought Trinity made system calls, rather than going through POSIX?}
+
 \noindent
 \textbf{Results.}
 We obtained the total reachable kernel trace for
@@ -341,17 +343,18 @@ like \texttt{open()}, \texttt{close()}, \texttt{read()}, \texttt{write()}, \text
 permitted for \texttt{open()}.
 
 The other virtualization systems all accessed a substantial number of code
-paths in the kernel,
-and they all accessed a larger section from the unpopular paths.
-This is because they have
-more dependence on complex system calls, and
-allow extensive use of complicated flags. For example,
-Graphene provides a complex system call API that allows
-\texttt{fork()} and \texttt{signals}, and can access many risky lines of code. 
-Docker has an even larger codebase and more complicated system functions. 
-It allows rarely used flags, such as \texttt{O\_TMPFILE}, \texttt{O\_NONBLOCK},
-and \texttt{O\_DSYNC}, which can reach potentially dangerous lines
-of code.
+paths in the kernel, and they all accessed a larger section from the unpopular
+paths. This is because they rely on the underlying host kernel to implement
+complex functionality, and therefore have more dependence on complex system
+calls and allow extensive use of complicated flags.  For example, Graphene's
+system call API supports multiple processes via \texttt{fork()} and signals,
+and therefore accesses many risky lines of code. \brendan{Is there a better
+example of complex kernel functionality that Graphene uses? It would be better
+if it were something that Lind also supports.} By default, Docker does not wrap
+or filter system calls made by applications running in a container. Thus,
+programs have access to rarely used flags, such as \texttt{O\_TMPFILE},
+\texttt{O\_NONBLOCK}, and \texttt{O\_DSYNC}, which can reach potentially
+dangerous lines of code.
 
 To summarize, our analysis suggests that Lind triggers the fewest kernel bugs because
 it has better control over the portions of the OS kernel accessed by applications.
