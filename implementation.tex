@@ -2,11 +2,8 @@
 \label{sec.implementation}
 
 To test our \lip design, we used it to implement a secure virtual machine
-called Lind\footnote{\scriptsize An old English word for a shield constructed from two layers of
-linden wood, providing strength in a lightweight form, the name is appropriate for
-a virtual machine that adapts two technologies\textendash
-yet still protects vulnerable OS kernel code from exploitation by
-untrusted user programs.}.
+called Lind\footnote{\scriptsize Lind is an old English word for a 
+shield constructed from two layers of linden wood.  }.
 \lip utilizes a computational module and a library OS. In Lind, Native Client (NaCl) serves as the former,
 while Restricted Python (Repy), with a POSIX interface built into it, performs the
 task of the latter.
@@ -83,8 +80,6 @@ small, auditable piece of code helps to reduce the risk of such occurrences.
 
 \subsection{Enhanced Safety in Call Handling with SafePOSIX Re-creation}
 
-However, Lind's security does not rely solely on Repy's
-safety record.
 The kernel interface is extremely rich and hard to protect.
 The dual sandbox Lock-in-Pop design used to build Lind provides enhanced
 safety protection through both isolation and a POSIX interface that
@@ -126,12 +121,16 @@ Here is an example of how this re-creation would work with the symbolic link fun
 Instead of relying on the underlying kernel to create symbolic links between real files 
 in the host file system, Lind builds and maintains its own metadata to represent a virtual symbolic link 
 between files within Lind's file system. In this case, if there is a bug in this symbolic link function, 
-such as creation of a link with a deleted file, the bug will be contained within Lind's re-creation. 
+such as creation of a link with a deleted file, the bug will be contained within Lind's re-creation. \cappos{Be specific here about what part of the system
+you are referring to!}
 As a result, instead of creating a security issue, the application is denied privileged access
 to the host OS kernel. 
 Therefore, attackers will not be able to leverage a bug within the symbolic link function to 
 exploit the host kernel.  
 
+
+\cappos{I find the bridge text here odd.  We should perhaps summarize instead
+of looking forward so much...}
 The Lind design offers a promising new approach to OS kernel code protection. 
 To determine if the ideas behind Lind were valid, we 
 designed a multi-step study to compare its security performance against a number 

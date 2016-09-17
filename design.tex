@@ -15,9 +15,7 @@ code paths through a very small trusted computer base, and utilizes
 functionality re-creation within a secure environment for complex implementations.
 
 \subsection{System Call Interposition (SCI)}
-SCI is the long-standing idea behind sandbox systems like Janus
-\cite{Janus0:96, Janus:99}. It relies on the underlying kernel
-to provide system functionality. A system call filter mediates requests
+SCI systems~\cite{Janus0:96, Janus:99} filter system calls to mediate requests
 from untrusted user code instead of allowing it to go directly to the kernel.
 The filter checks a predefined security policy to decide which system calls are
 allowed to pass to the underlying kernel, and which ones must be stopped.
@@ -144,8 +142,6 @@ in the underlying system and any applications in the userspace.
 As shown in Figure \ref{fig:design_safe_reimplementation},
 \lip constructs a set of safe system functions within
 the library OS sandbox.
-The sandbox responds to system call requests, if the requests are granted, and
-returns results to the user code.
 It is comprised of two parts: a sandbox kernel that provides access to basic, but critical
 system calls, and a safely re-created API to implement more
 complex calls, such as a symbolic link system call.
@@ -163,6 +159,9 @@ The re-created APIs will then use those basic
 resources, such as memory allocations,
 network sockets, and file descriptors to construct a more complex virtual system interface, which will be
 provided to untrusted user code.
+\cappos{This paragraph is confusing.  Do we need to label the diagram
+differently so it is easier to refer to things like the "System Functionality
+Safe Re-creation?"}
 
 %With the system functionality safe reimplementation, unmodified user code is able to run on top of our designed system.
 It is important to note that our design does not rely on any specific technique or tool, and it is possible

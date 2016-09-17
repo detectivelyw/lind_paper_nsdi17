@@ -25,7 +25,8 @@ in protecting against zero-day Linux kernel bugs?}
 vulnerable in different virtualization systems?}
 (Section~{{\ref{Reachable-Kernel-Trace-Analysis-for-Different-Virtualization-Systems}})
 
-\textit{If Lind's SafePOSIX construction has bugs, how much threat does this pose?}
+\textit{If Lind's SafePOSIX construction has bugs, what is the impact of
+this vulnerability?}
 (Section~{{\ref{Reachable-Kernel-Trace-Analysis-for-Repy-Sandbox}})
 
 \textit{In the Lind prototype, what is the expected performance overhead in
@@ -271,6 +272,7 @@ All (100\%) bugs were triggered in Native Linux,
 while the other programs had lower rates: 8/35 (22.9\%)  in Docker,
 12/35 (34.3\%)  in LXC, and 8/35 (22.9\%) bugs in Graphene.
 In comparison, only 1 out of 35 bugs  (2.9\%) was triggered in Lind.
+\cappos{Yiwen, please expand!}
 
 Our initial results % as illustrated by the above case studies,
 suggest that bugs are usually triggered by complex system calls, or basic system calls
@@ -293,7 +295,7 @@ Systems}
   \hline
   Docker & 8 & 119.0K & 69.5K & 49.5K \\
   \hline
-  Graphene & 8 & 95.5K & 62.2K & 33,3K \\
+  Graphene & 8 & 95.5K & 62.2K & 33.3K \\
   \hline
   Lind & 1 & 70.3K & 70.3K & 0 \\
   \hline
@@ -370,8 +372,9 @@ to obtain the reachable kernel trace in Linux kernel 3.14.1.
 \noindent
 \textbf{Results.}
 To understand Lind's security properties, we need to see how much kernel is exposed to
-SafePOSIX. Since our SafePOSIX is entirely built on top of the Repy sandbox kernel,
-it suffices to determine the kernel trace of Repy.
+SafePOSIX. Since our SafePOSIX runs inside the Repy sandbox kernel,
+fuzzing it suffices to determine the portion of the kernel reachable from 
+inside the Repy sandbox.
 
 \begin{table}
 \centering
@@ -381,7 +384,7 @@ it suffices to determine the kernel trace of Repy.
   \multirow{3}{1.5cm}{\bf Virtualization system} & \multirow{3}{0.5cm}{\bf \# of Bugs} & \multicolumn{3}{c|}{\bf Kernel trace} \\ \cline{3-5}
   & & \multirow{2}{1.5cm}{Total coverage (LOC)} & \multirow{2}{1.5cm}{In popular paths (LOC)} & \multirow{2}{1.5cm}{In risky paths (LOC)}  \\
   & & & & \\  \hline
-  Repy & 1 & 74.4K & 74,4K & 0 \\
+  Repy & 1 & 74.4K & 74.4K & 0 \\
   \hline
 \end{tabular}\caption{\small Reachable kernel trace analysis for Repy.}
 \label{table:trace-Repy}
@@ -419,23 +422,23 @@ kernel bugs.
 \noindent
 \textbf{Setup.}
 %To test the execution time overhead in Lind for running real-world applications,
+We ran a few programs of different types to understand Lind's performance 
+impact.  All applications ran unaltered and correctly in Lind. To run the 
+applications, it was sufficient to just recompile the unmodified
+source code using NaCl's compiler and Lind's \texttt{glibc} to call
+into SafePOSIX.
+
 To measure Lind's runtime performance overhead compared to Native Linux
  when running real-world applications,
 we first compiled and ran six widely-used legacy applications:
 a prime number calculator Primes 1.0,
 GNU Grep 2.9, GNU Wget 1.13, GNU Coreutils 8.9,
-GNU Netcat 0.7.1, and K\&R Cat. Note that the performance of Lind
-was not optimized in any way before running these tests.
-
-All applications ran unaltered and correctly in Lind. To run the applications,
-it was sufficient to just recompile the unmodified
-source code using NaCl's compiler and Lind's \texttt{glibc} to call
-into SafePOSIX.
-
-In addition, we ran two large legacy applications, Tor 0.2.3 and Apache 2.0.64 in Lind.
+GNU Netcat 0.7.1, and K\&R Cat. 
+We also ran more extensive benchmarks on two large legacy applications, 
+Tor 0.2.3 and Apache 2.0.64 in Lind.
 %Both Tor and Apache were recompiled with NaCl's compiler and ran in Lind.
-We used Tor's built-in benchmark program and Apache's benchmarking tool \texttt{ab} to perform
-basic testing operations and record the execution time.
+We used Tor's built-in benchmark program and Apache's benchmarking tool 
+\texttt{ab} to perform basic testing operations and record the execution time.
 
 \begin{table}
 \centering
@@ -530,7 +533,8 @@ SafePOSIX re-creation.
 As shown above, Lind generally incurs some performance overhead.
 However, performance slowdown is common in virtualization systems.
 For example, Graphene \cite{Graphene-14} also shows an overhead ranged from
-1.4x to 2x when running applications such as Apache and UNIX benchmark.
+1.4x to 2x when running applications such as Apache and UNIX benchmark \cappos{
+What is this?}.
 Lind shares the same magnitude of slowdown with Graphene in many cases.
 Since an attack on the kernel can have devastating
 consequences, %at this initial stage,
