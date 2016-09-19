@@ -11,12 +11,9 @@ can expose privileged access to attackers that could lead to a system take-over.
 To combat the threat from zero-day vulnerabilities, untrusted programs are often executed in a 
 secure virtualization system, such as a guest OSVM, a system call 
 interposition module, or a library OS system. Our intent is to
-build such a system capable of protecting not only
-an underlying host OS, but also any programs running in it. 
-%from both malicious attacks
-%and accidental triggering by applications.  
-\cappos{I do not know what
-you mean to convey with the last clause of the previous sentence.}
+build such a system capable of protecting a vulnerable underlying host OS, 
+while running untrusted user programs.
+
 In this section, we define the scope of our efforts. We also briefly note why 
 this study does not evaluate a few existing design schemes.
 
@@ -72,7 +69,17 @@ ways of accessing hardware resources and require different measuring approaches.
 %These devices are dependent on the underlying hardware, and do not interact
 %with a privileged OS kernel. Such differences in both structure and function
 %make it difficult to directly compare these techniques to our proposed model.
-\cappos{add content on QEMU, VirtualBox, etc.}
+
+In addition, we exclude evaluation and direct comparison with full virtualization virtual machines, 
+such as VirtualBox \cite{VirtualBox}, VMWare Workstation \cite{VMWare-Workstation}, and QEMU \cite{QEMU}. 
+For those full virtualization systems, 
+the virtual machine simulates hardware to allow an unmodified guest OS to run. While the goal 
+of our design is not to run a full guest OS with large and complex TCB, but to support single-process 
+programs with small TCB and secure isolated environment. With different goals, our proposed design is fundamentally 
+a different approach from full virtualization. The two approaches have very different TCBs, and have entirely different 
+mechanisms to serve system calls to user programs. Direct measurement and comparison between full virtualization 
+and our design is not fair and can be very hard to conduct. Therefore, evaluation of full virtualization virtual machines is 
+beyond the scope of this work.  
 
 To build a VM to resist zero-day vulnerabilities, we need to know which
 portions of the kernel may be more prone to exploitation. Our first step is to

@@ -83,11 +83,13 @@ indicating that the guest could have triggered the bug.
 %determine if a specific bug was triggered.
 
 %\begin{table*}[!ht]
-\begin{table}[tbp]
+%\begin{table}[tbp]
+%\scriptsize
+\begin{table}
 \scriptsize
 \centering
 
-\begin{tabular}{|p{1.7cm}|l|p{1cm}|p{.8cm}|p{1cm}|p{.8cm}|}\hline
+\begin{tabular}{|p{1.7cm}|l|p{.6cm}|p{.6cm}|p{1cm}|p{.6cm}|}\hline
 
 \multirow{2}{1.7cm}{\bf Vulnerability}    &  \multirow{2}{.7cm}{\bf Native Linux} 
  & \multirow{2}{1cm}{\bf Docker} & \multirow{2}{1cm}{\bf LXC} &
@@ -272,10 +274,39 @@ All (100\%) bugs were triggered in Native Linux,
 while the other programs had lower rates: 8/35 (22.9\%)  in Docker,
 12/35 (34.3\%)  in LXC, and 8/35 (22.9\%) bugs in Graphene.
 In comparison, only 1 out of 35 bugs  (2.9\%) was triggered in Lind.
-\cappos{Yiwen, please expand!}
 
-Our initial results % as illustrated by the above case studies,
-suggest that bugs are usually triggered by complex system calls, or basic system calls
+\yiwen{My first try on the analysis, will work on this more.}
+
+When we take a closer look at the results, we can see that this outcome 
+has a lot to do with the design principles of those virtualization systems and 
+the way they handle system call requests. 
+Graphene \cite{Graphene-14} is a library OS that relies heavily on the Linux kernel to handle system calls. 
+Graphene's Linux library implements the Linux system calls using a variant of the 
+Drawbridge \cite{Drawbridge-11} ABI, which has 43 functions. Those ABI functions 
+are provided by the Platform Adaptation Layer (PAL), implemented using 50 calls 
+to the kernel. It turns out that 8 vulnerabilities in our test were triggered through using PAL's 
+50 system calls. On the contrary, Lind only relies on 33 system calls, which significantly reduces 
+risks and avoids 7 out of the 8 bugs. In fact, the design of Graphene requires extensive interaction 
+with the host kernel and have many risks. The developers of Graphene actually manually conducted 
+an analysis of 291 Linux vulnerabilities from 2011 to 2013, and found out that 144 out of 291 vulnerabilities 
+cannot be prevented with Graphene's design. 
+
+LXC \cite{LXC} is an operating-system-level virtualization that uses Linux kernel features to achieve containment. 
+Docker \cite{Docker} is a Linux container that runs on top of LXC. Those two containers have a very similar design feature 
+that they both rely directly on the Linux kernel to handle system call requests. Since system calls inside Docker are passed down 
+to LXC and then made into the kernel, we found out that all 8 kernel vulnerabilities triggered inside Docker were also triggered 
+with LXC. In addition, LXC interacts with the kernel via its \texttt{liblxc} library component, which triggered the extra 4 bugs. 
+
+It should be noted that although the design of Lind only accesses popular paths in the kernel and implements SafePOSIX inside 
+of a sandbox, there are a few things that Lind must rely on the kernel as fundamental building blocks. To be more specific, 
+\texttt{mmap} and \texttt{threads} cannot be recreated inside SafePOSIX without interaction with the kernel, since there has 
+to be some basic operations to access the hardware. Therefore, in our design of Lind, \texttt{mmap} and \texttt{threads} 
+are passed down to the kernel, and any vulnerabilities related with them are not avoidable. 
+CVE-2014-4171 is a bug triggered by \texttt{mmap} inside Lind. It was also triggered inside Docker, LXC, and Graphene, indicating 
+that those systems rely on the kernel to perform \texttt{mmap} operations as well.      
+
+Our initial results suggest that bugs are usually triggered by extensive interaction with the unpopular paths in the kernel through 
+complex system calls, or basic system calls
 with complicated or rarely used flags. The \emph{Lock-in-Pop} design, and thus Lind,
 provides strictly controlled access to the kernel, and so, poses
 the least risk.
@@ -322,6 +353,8 @@ kernel traces. This helps us understand the potential risks a virtualization sys
 may pose based upon how much access it allows to the kernel code.
 All experiments were conducted under Linux kernel 3.14.1.
 
+\brendan{How does the fuzzing work with Lind? I thought Trinity made system calls, rather than going through POSIX?}
+
 \noindent
 \textbf{Results.}
 We obtained the total reachable kernel trace for
@@ -341,17 +374,18 @@ like \texttt{open()}, \texttt{close()}, \texttt{read()}, \texttt{write()}, \text
 permitted for \texttt{open()}.
 
 The other virtualization systems all accessed a substantial number of code
-paths in the kernel,
-and they all accessed a larger section from the unpopular paths.
-This is because they have
-more dependence on complex system calls, and
-allow extensive use of complicated flags. For example,
-Graphene provides a complex system call API that allows
-\texttt{fork()} and \texttt{signals}, and can access many risky lines of code. 
-Docker has an even larger codebase and more complicated system functions. 
-It allows rarely used flags, such as \texttt{O\_TMPFILE}, \texttt{O\_NONBLOCK},
-and \texttt{O\_DSYNC}, which can reach potentially dangerous lines
-of code.
+paths in the kernel, and they all accessed a larger section from the unpopular
+paths. This is because they rely on the underlying host kernel to implement
+complex functionality, and therefore have more dependence on complex system
+calls and allow extensive use of complicated flags.  For example, Graphene's
+system call API supports multiple processes via \texttt{fork()} and signals,
+and therefore accesses many risky lines of code. \brendan{Is there a better
+example of complex kernel functionality that Graphene uses? It would be better
+if it were something that Lind also supports.} By default, Docker does not wrap
+or filter system calls made by applications running in a container. Thus,
+programs have access to rarely used flags, such as \texttt{O\_TMPFILE},
+\texttt{O\_NONBLOCK}, and \texttt{O\_DSYNC}, which can reach potentially
+dangerous lines of code.
 
 To summarize, our analysis suggests that Lind triggers the fewest kernel bugs because
 it has better control over the portions of the OS kernel accessed by applications.
@@ -382,7 +416,7 @@ inside the Repy sandbox.
 \begin{tabular}{|l|l|l|l|l|}
   \hline
   \multirow{3}{1.5cm}{\bf Virtualization system} & \multirow{3}{0.5cm}{\bf \# of Bugs} & \multicolumn{3}{c|}{\bf Kernel trace} \\ \cline{3-5}
-  & & \multirow{2}{1.5cm}{Total coverage (LOC)} & \multirow{2}{1.5cm}{In popular paths (LOC)} & \multirow{2}{1.5cm}{In risky paths (LOC)}  \\
+  & & \multirow{2}{1.5cm}{Total coverage (LOC)} & \multirow{2}{1.3cm}{In popular paths (LOC)} & \multirow{2}{1.3cm}{In risky paths (LOC)}  \\
   & & & & \\  \hline
   Repy & 1 & 74.4K & 74.4K & 0 \\
   \hline
