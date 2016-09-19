@@ -30,7 +30,8 @@ modified NaCl to instead forward these calls to our library OS, SafePOSIX
 (described in detail below).
 
 \brendan{We don't seem to actually say more than about one sentence about
-SafePOSIX below before launching into the example. Maybe we should fix that?}
+SafePOSIX below before launching into the example. Maybe we should fix that?} 
+\yiwen{I tried to fix this. Please see the new content in 5.2.}
 
 \paragraph{Seattle's Repy.}
 
@@ -53,8 +54,6 @@ file functions, 6 threading functions, and 8 miscellaneous functions (Table
 
 \begin{table}
 \centering
-\caption {Repy sandbox kernel functions that support Lind's SafePOSIX re-creation.}
-
   \begin{tabular}{ | p{2.5cm} | p{4.5cm} |}
   \hline
   \textbf{Repy Function} & \textbf{Available System Calls}  \\ \hline
@@ -63,13 +62,15 @@ Networking & \emph{gethostbyname, openconnection, getmyip, socket.send, socket.r
 listenforconnection, tcpserversocket.getconnection, tcpserversocket.close, sendmessage, listenformessage,
 udpserversocket.getmessage, and udpserversocket.close.} \\ \hline
 
-I/O Operations & \emph{openfile, file.close, file.readat, file.writeat, listfiles, and removefile.} \\ \hline
+File System I/O Operations & \emph{openfile(filename, create), file.close(), file.readat(size limit, offset), file.writeat(data, offset), 
+listfiles(), and removefile(filename).} \\ \hline
 
 Threading & \emph{createlock, sleep, lock.acquire, lock.release, createthread, and getthreadname.} \\ \hline
 
 Miscellaneous Functions & \emph{getruntime, randombytes, log, exitall, createvirtualnamespace,
 virtualnamespace.evaluate, getresources, and getlasterror.}  \\ \hline
     \end{tabular}
+    \caption{Repy sandbox kernel functions that support Lind's SafePOSIX re-creation.}
     \label{table:RepyKernel}
 \end{table}
 
@@ -77,58 +78,57 @@ virtualnamespace.evaluate, getresources, and getlasterror.}  \\ \hline
 \subsection{Enhanced Safety in Call Handling with SafePOSIX Re-creation}
 
 The full kernel interface is extremely rich and hard to protect.
-The dual sandbox Lock-in-Pop design used to build Lind provides enhanced
-safety protection through both isolation and a POSIX interface that
+The dual sandbox \lip design used to build Lind provides enhanced
+safety protection through both isolation and a POSIX interface (SafePOSIX) that
 reimplements risky system calls to
 provide full-featured API for legacy applications, with minimal impact on the kernel.
 
-\textbf{An example of system call execution.}
 In Lind, a system call issued from user code is
-received by NaCl, and then redirected to our system API module, which
-includes a POSIX API. This set of standard
-operating system interfaces provides
-necessary operating functionalities. A standard POSIX API is large and complex,
-making it difficult to ensure its implementation is secure and bug-free.
-Lind takes advantage of the fact that Repy is a programming language sandbox to
-construct a variation on the POSIX API. Following the
-Lock-in-Pop design, to service a system call in NaCl, a server routine in
-Lind marshals its arguments into a text string, and sends the call and the arguments
-to the Repy sandbox. The re-created system call marshals the result and
+received by NaCl, and then redirected to SafePOSIX. 
+To service a system call in NaCl, a server routine in 
+Lind marshals its arguments into a text string, and sends the call and the arguments 
+to SafePOSIX. The SafePOSIX re-creation serves the system call request, and then marshals the result and
 returns it back to NaCl. Eventually, the result is returned as the appropriate
 native type to the calling program.
 
-The file system API in \lip needs only
-to provide functionality of writing data to storage.
-%\yanyan{why only discuss file system?
-%how about network, threading, etc?}
-%\yiwen{threading is done by the OS kernel directly, no reconstruction to discuss.
-%And our network functions are really simple, things like opening and closing a socket is
-%not very exciting.}
-It eliminates the need of having a direct abstraction, the
-concept of file permissions, links, or even the concept of multiple files.
-The system API safe re-creation is a set of more complicated system calls
-derived from functions in the sandbox kernel.
-It serves as a mediator between the user code
-and the OS kernel. The re-creation is safe
-because the reconstructed calls are isolated in a sandbox, and its code is written 
-in a memory-safe programming language.
+The SafePOSIX is safe because of two design principles. 
+First, its re-creation only relies on a small set of basic Repy functions (Table \ref{table:RepyKernel}). 
+Therefore, the interaction with the host OS kernel is strictly controlled. 
+Second, the SafePOSIX re-creation is sandboxed with the Repy programming language sandbox, 
+which properly isolates any bugs inside SafePOSIX itself. 
 
-Here is an example of how this re-creation would work with the symbolic link function. 
+We now describe in more detail about how SafePOSIX works, 
+with an example of our SafePOSIX re-creation of the file system. 
+The core of the SafePOSIX file system is the \texttt{open}, \texttt{close}, \texttt{read}, \texttt{write}, 
+\texttt{getdents}, \texttt{stat}, \texttt{mkdir} and \texttt{rmdir} system calls. 
+These give the program the illusion of a normal file system even though Repy does not allow directories or access to file attributes. 
+
+When Lind starts, the file system does some pre-initialization. Using the Repy API, the SafePOSIX file system reads a file named ``lind.metadata'' 
+from the local directory. This file contains packed metadata. That metadata is from previous runs of Lind, 
+and the data is loaded into the runtime SafePOSIX file system data structures. 
+There are three main data structures: a list of open file handles, a Python dict of inodes and file metadata, 
+and a mapping table to go from a file name and path to an inode number. 
+All these data structures are stored in memory, and written to disk when they are changed. 
+
+The \texttt{open} system call is the normal starting point for most file system operations. 
+Given a path, it will return a file descriptor to perform other operations like \texttt{read} and \texttt{write}. 
+When SafePOSIX receives the \texttt{open} system call, it parses the path, 
+traverses the path in the inode lookup table. 
+When SafePOSIX finds the file, it use the Repy \texttt{openfile} call to get the backing file's object, 
+it then picks a free entry from the file handle table, and stores a link to the inode and the file object. 
+If the \texttt{create} flag is passed, it adds an entry to the inode and inode lookup table, and creates a new backing file. 
+The backing files are not named the same as the actual files, but rather just ``linddata.001'', ``linddata.002'' etc. 
+The simple names for the backing files allows us to store the real file name in the metadata, 
+this is necessary because there are strict rules about the content of a filename in Repy. 
+Finally, the call returns the index into the file handle table, or if an error was encountered, an error number to set the Unix \texttt{errno} value to.
+
+Here is another example of how SafePOSIX re-creation would work with the symbolic link function. 
 Instead of relying on the underlying kernel to create symbolic links between real files 
-in the host file system, Lind builds and maintains its own metadata to represent a virtual symbolic link 
-between files within Lind's file system. In this case, if there is a bug in this symbolic link function, 
-such as creation of a link with a deleted file, the bug will be contained within Lind's re-creation. \cappos{Be specific here about what part of the system
-you are referring to!}
-As a result, instead of creating a security issue, the application is denied privileged access
-to the host OS kernel. 
-Therefore, attackers will not be able to leverage a bug within the symbolic link function to 
-exploit the host kernel.  
+in the host file system, SafePOSIX builds and maintains its own metadata to represent a virtual symbolic link 
+between files within the SafePOSIX file system. In this case, if there is a bug in this symbolic link function, 
+such as creation of a link with a deleted file, the bug will be contained within the SafePOSIX re-creation. 
+As a result, instead of creating a security issue, the application is denied privileged access to the host OS kernel. 
+Therefore, attackers will not be able to leverage a bug within the symbolic link function to exploit the host kernel.  
 
-
-\cappos{I find the bridge text here odd.  We should perhaps summarize instead
-of looking forward so much...}
-The Lind design offers a promising new approach to OS kernel code protection. 
-To determine if the ideas behind Lind were valid, we 
-designed a multi-step study to compare its security performance against a number 
-of existing virtualization systems. Details of the study and its results are presented 
-in the following section.
+As described in the above examples, the SafePOSIX re-creation only uses a few Repy sandbox kernel functions to access the hardware. 
+It creates and maintains its own metadata and data structures, using the Repy programming language sandbox. 
