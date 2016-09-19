@@ -171,7 +171,7 @@ popular paths have a much lower bug rate than unpopular ones.
 
 {\bf Comparison with other security metrics.}
 Ozment, et al.~\cite{ozment2006milk} demonstrated that code that
-had been around longer in the BSD kernel tended to have fewer bugs.
+had been around longer in the BSD kernel tended to have fewer bugs (metric 1).
 %They determined that a significant extent (61\%) of the reported
 %vulnerabilities were
 %%``foundational," meaning they were
@@ -192,7 +192,7 @@ virtualization system,
 as a system could not run very long exclusively on old code.
 
 Another metric, reported by Chou, et al.~\cite{PittSFIeld}, showed that certain parts of the kernel, 
-device drivers in particular, were more vulnerable than others. 
+device drivers in particular, were more vulnerable than others (metric 2). 
 %In particular, they identified that device drivers have much more vulnerabilities.
 Applying this metric on our dataset, we found that the driver code in our version
 of the Linux kernel accounted for only 8.9\% of the total codebase, and contained
@@ -224,7 +224,7 @@ flaws, indicating the need to localize bugs at a finer granularity.
 
 To summarize, we demonstrated that previously proposed security
 metrics have weak correlation between the occurrence of bugs
-and areas of code they identify. In contrast, our metric 
+and areas of code they identify. In contrast, our metric (metric 3) 
 provides an effective and statistically significant
 %($\alpha=0.01$, $\rho=0.0015$)
 means for predicting where in the kernel exploitable flaws
