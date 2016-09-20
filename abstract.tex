@@ -1,26 +1,24 @@
 \subsection*{Abstract}
 
 Virtual machines (VMs) have been widely used in practice, in part for their ability to
-isolate potentially untrusted code from the rest of a system. 
-Recently, library OSes and containers became promising approaches.  
+isolate potentially untrusted code from the rest of a system.
+Recently, library OSes and containers became promising approaches.
 %
 However, it is often possible to trigger zero-day flaws
-in the host Operating System(OS) from inside of such virtualized systems. 
+in the host Operating System(OS) from inside of such virtualized systems.
 %
-In this paper, we use a new insight about where security bugs lie and later use
-this to devise a design to improve the security of applications
-run in VMs on top of a vulnerable host OS. 
+In this paper, we offer a new insight about where security bugs lie. From this perspective, we devise a design that allows applications to run more securely in VMs on top of a vulnerable host OS. 
 We begin by observing that a portion of the OS kernel, the kernel paths accessed
 by popular applications in everyday use, contains fewer security bugs than less-used paths. We
 leverage this observation to devise the \lip design, which
 \textbf{\textit{locks}} an application, and the POSIX implementation that services it, into
 accessing only the well-used \textbf{\textit{popular}} portion of the kernel.  Using the \lip model, we
-implement a library OS virtual machine called Lind. 
+implement a library OS virtual machine called Lind.
 %
 We compare Lind and three other virtualized systems that were
 available at the release of Linux kernel version 3.14.1, and evaluate
 their effectiveness in containing the zero-day kernel bugs that have been discovered
 since then.
 %
-Our results show that Lind can prevent the triggering of zero-day kernel bugs significantly better 
-than existing library OS Graphene, and containers such as Docker and LXC. 
+Our results show that Lind can prevent the triggering of zero-day kernel bugs significantly better
+than existing library OS Graphene, and containers such as Docker and LXC.
