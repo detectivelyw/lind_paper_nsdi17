@@ -353,8 +353,6 @@ kernel traces. This helps us understand the potential risks a virtualization sys
 may pose based upon how much access it allows to the kernel code.
 All experiments were conducted under Linux kernel 3.14.1.
 
-\brendan{How does the fuzzing work with Lind? I thought Trinity made system calls, rather than going through POSIX?}
-
 \noindent
 \textbf{Results.}
 We obtained the total reachable kernel trace for
@@ -381,7 +379,9 @@ calls and allow extensive use of complicated flags.  For example, Graphene's
 system call API supports multiple processes via \texttt{fork()} and signals,
 and therefore accesses many risky lines of code. \brendan{Is there a better
 example of complex kernel functionality that Graphene uses? It would be better
-if it were something that Lind also supports.} By default, Docker does not wrap
+if it were something that Lind also supports.} 
+\yiwen{Will add a better example.}
+By default, Docker does not wrap
 or filter system calls made by applications running in a container. Thus,
 programs have access to rarely used flags, such as \texttt{O\_TMPFILE},
 \texttt{O\_NONBLOCK}, and \texttt{O\_DSYNC}, which can reach potentially
