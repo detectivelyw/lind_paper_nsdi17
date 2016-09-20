@@ -117,88 +117,39 @@ design \lip.
 
 \begin{figure}%[h]
 \centering
-\includegraphics[width=.9\columnwidth]{diagram/Virtualization_Design_Model_01.png}
+\includegraphics[width=1.0\columnwidth]{diagram/Virtualization_Design_Model_01.png}
 \caption{\small \lip system ensures safe execution of untrusted user code
 despite existing potential zero-day bugs in the OS kernel.}
 \label{fig:design_safe_reimplementation}
 \end{figure}
 
-\cappos{Begin Justin's candidate paragraphs...}
-
 At the lowest level of the design (interfacing with the host OS) is the 
-sandbox kernel.  The sandbox kernel's main role is to ensure that only
-popular paths of the host OS's kernel can be accessed.  The sandbox
-kernel could thus function as a very granular system call filter, or
-as the core of a programming language sandbox.  Note, that the functionality
-provided by the sandbox kernel is (intentionally) much less than what
-an application needs.  For example, an application may store files in 
-directories and set permissions on those files.  The sandbox kernel may 
-provide a much simpler abstraction (e.g., a block storage abstraction), so 
-long as the strictly needed functionality (e.g., persistent storage) is
-provided.
+sandbox kernel (\ding{172} in Figure \ref{fig:design_safe_reimplementation}). 
+The sandbox kernel's main role is to ensure that only popular paths (\ding{173} in Figure \ref{fig:design_safe_reimplementation}) 
+of the host OS's kernel can be accessed. 
+The sandbox kernel could thus function as a very granular system call filter, or 
+as the core of a programming language sandbox. Note, that the functionality
+provided by the sandbox kernel is (intentionally) much less than what 
+an application needs. For example, an application may store files in directories and set permissions on those files. 
+The sandbox kernel may provide a much simpler abstraction (e.g., a block storage abstraction), 
+so long as the strictly needed functionality (e.g., persistent storage) is provided.
 
-The appliction is provided more complex functionality due to the XYZ.  The XYZ
-has the needed complexity to build the more convenient higher level 
-abstractions using the basic functionality the sandbox kernel provides.  The
-XYZ is itself isolated within a library OS sandbox.  The library OS sandbox 
-needs only to force all system calls from XYZ through the sandbox kernel.
-So long as this is performed, all calls from XYZ will only touch the permitted
-(popular) kernel paths in the underlying host OS.
+The application is provided more complex functionality due to the SafePOSIX re-creation 
+(\ding{174} in Figure \ref{fig:design_safe_reimplementation}). 
+The SafePOSIX re-creation has the needed complexity to build the more convenient higher level 
+abstractions using the basic functionality the sandbox kernel provides. 
+The SafePOSIX re-creation is itself isolated within a library OS sandbox. 
+The library OS sandbox needs only to force all system calls from SafePOSIX re-creation through the sandbox kernel. 
+So long as this is performed, all calls from SafePOSIX re-creation will only touch the permitted (popular) kernel paths in the underlying host OS.
 
-Similarly, untrusted user code also must be restricted in the way in which 
-it performs system calls.  System calls must go through the XYZ, into the
-sandbox kernel, and then to the host OS.  The reason is that if user code 
-could directly make system calls, it could access any paths in the host OS's
-kernel desired and thus exploit bugs within them.
+Similarly, untrusted user code (\ding{175} in Figure \ref{fig:design_safe_reimplementation}) also must be restricted in the way 
+in which it performs system calls. 
+System calls must go through the SafePOSIX re-creation, into the sandbox kernel, and then to the host OS. 
+The reason is that if user code could directly make system calls, it could access any paths in the host OS's kernel desired 
+and thus exploit bugs within them.
 
-Note that it is expected that bugs will occur in many components.  We expect
-that bugs will occus in the non-popular kernel paths, bugs will exist in
-the XYZ, and the user program will be buggy or even explicitly malicious.
-Since the remaining components are small and/or well tested, this leads
-to a lower risk of compromise.
-
-
-
-\cappos{Original text for this part of the paper}
-
-In addition, the system is located entirely in the userspace, and both the size of
-the sandbox kernel and its access to the OS kernel is restricted
-(Figure \ref{fig:design_safe_reimplementation}). Any complex or possibly risky system
-functions that require contact with the OS kernel is re-created using
-memory-safe code and is contained within a sandbox. This approach has advantages
-over others that require modifications to
-the OS kernel (Section {\ref{sec.metric}). The isolation provided by placing 
-\lip in the userspace is also an added protection over earlier designs.
-\lip does not
-expose kernel privileges that could allow attacks
-in the underlying system and any applications in the userspace.
-
-
-As shown in Figure \ref{fig:design_safe_reimplementation},
-\lip constructs a set of safe system functions within
-the library OS sandbox.
-It is comprised of two parts: a sandbox kernel that provides access to basic, but critical
-system calls, and a safely re-created API to implement more
-complex calls, such as a symbolic link system call.
-The sandbox kernel forms the only TCB of our virtual machine 
-\yiwen{should we call Lind library OS?}, and is kept
-extremely small and simple so that it is easy to verify its security.
-The sandbox code provides an API that performs a few critical system calls with
-the most basic parameters, such as writing data to the file system
-and communicating with the network.
-%The kernel utilizes the most simplistic calls
-%possible with the most basic arguments.
-Complex system functionality is then built on top of the sandbox kernel using our
-safer re-creation interface.
-The re-created APIs will then use those basic
-resources, such as memory allocations,
-network sockets, and file descriptors to construct a more complex virtual system interface, which will be
-provided to untrusted user code.
-\cappos{This paragraph is confusing.  Do we need to label the diagram
-differently so it is easier to refer to things like the "System Functionality
-Safe Re-creation?"}
-
-%With the system functionality safe reimplementation, unmodified user code is able to run on top of our designed system.
-It is important to note that our design does not rely on any specific technique or tool, and it is possible
-to choose from several different techniques that fit specific security requirements. 
-In the following section, we present and describe the prototype system Lind, using our new design. 
+Note that it is expected that bugs will occur in many components. 
+We expect that bugs will occur in the non-popular (risky) kernel paths (\ding{176} in Figure \ref{fig:design_safe_reimplementation}), 
+bugs will exist in the SafePOSIX re-creation, and the user program will be buggy or even explicitly malicious (created by attackers). 
+Since the remaining components (\ding{172} and \ding{173} in Figure \ref{fig:design_safe_reimplementation}) 
+are small and/or well tested, this leads to a lower risk of compromise. 
