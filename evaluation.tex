@@ -7,11 +7,11 @@ we compared its performance against three existing
 virtualization systems -- Docker, LXC, and Graphene.
 %This section describes
 %the purpose and setup of our experiments, and presents and discusses our results.
-We chose these three systems because they are representative of the most
-widely-used current design models. 
-LXC is the well-known Linux container designed for the Linux kernel. 
-Docker is a widely-used container. 
-And Graphene is an open source library OS. 
+We chose these three systems because they currently represent the most
+widely-used design models for securing the OS kernel.
+LXC is a well-known container designed specifically for the Linux kernel.
+Docker is a widely-used container in a number of systems, while
+Graphene is an open source library OS.
 Lastly, we also tested Native Linux to serve as a
 baseline for comparison.
 %
@@ -25,8 +25,8 @@ in protecting against zero-day Linux kernel bugs?}
 vulnerable in different virtualization systems?}
 (Section~{{\ref{Reachable-Kernel-Trace-Analysis-for-Different-Virtualization-Systems}})
 
-\textit{If Lind's SafePOSIX construction has bugs, what is the impact of
-this vulnerability?}
+\textit{If Lind's SafePOSIX construction has bugs, how severe an impact would
+this vulnerability have?}
 (Section~{{\ref{Reachable-Kernel-Trace-Analysis-for-Repy-Sandbox}})
 
 \textit{In the Lind prototype, what is the expected performance overhead in
@@ -39,35 +39,35 @@ real-world applications?}
 %\textbf{Test Purpose.}
 %To evaluate how well each virtualization system protects the Linux kernel
 %against reported zero-day bugs.
-%\brendan{This is my best understanding of how the tests were conducted. Yiwen et al., please jump in and correct me if I got something wrong.} 
+%\brendan{This is my best understanding of how the tests were conducted. Yiwen et al., please jump in and correct me if I got something wrong.}
 %\yiwen{The setup section looks good to me.}
 
 \noindent
 \textbf{Setup.}
 To evaluate how well each virtualization system protects the Linux kernel
 against reported zero-day bugs,
-we identified and examined a list of 69 historical bugs that were found and patched in version 3.14.1 the Linux kernel \cite{CVE-Datasource}.
+we examined a list of 69 historical bugs that had been identified and patched in version 3.14.1 of the Linux kernel \cite{CVE-Datasource}.
 By analyzing security patches for those bugs,
-we identified the lines of code in the kernel that correspond to each one.
+we were able to identify the lines of code in the kernel that correspond to each one.
 
-In the following evaluation, we assume that a bug is potentially triggerable if the lines of code that were changed in the patch are reached 
+In the following evaluation, we assume that a bug is potentially triggerable if the lines of code that were changed in the patch are reached
 (i.e., the same metric described in Section~\ref{sec.metric}).
-This measure may overestimate potential danger posed by a system (since simply reaching the buggy code does not mean that guest code 
-actually has enough control to exploit the bug).
-However, this overestimate should apply equally to all of the systems we tested, which means it is still useful as a way to compare them.
+This measure may overestimate potential danger posed by a system since simply reaching the buggy code does not mean that guest code
+actually has enough control to exploit the bug.
+However, this overestimate should apply equally to all of the systems we tested, which means it is still a useful method of comparison.
 
-Next, we sought out proof-of-concept code that triggered each bug. 
+Next, we sought out proof-of-concept code that could trigger each bug.
 We were able to obtain or create code that triggered nine out of the 69 bugs \cite{Exploit-Database}.
-For the remaining, we used the Trinity system call fuzzer 
+For the remaining, we used the Trinity system call fuzzer
 \cite{Trinity} on Linux 3.14.1 (referred to as ``Native'' Linux in Table~\ref{table:trigger_vulnerabilities}).
-By comparing the code reached during fuzzing with the lines of code affected by security patches, 
+By comparing the code reached during fuzzing with the lines of code affected by security patches,
 we were able to identify an additional 26 bugs that could be triggered.
 
-We then evaluated the protection afforded by four virtualization systems (including Lind) by attempting to trigger the 35 bugs from inside each.
-The host system for each test ran version of Linux 3.14.1 with gcov instrumentation enabled.
-For the nine bugs that we could directly trigger, we ran the proof of concept exploit inside the guest.
+We then evaluated the protection afforded by four virtualization systems (including Lind) by attempting to trigger the 35 bugs from inside each one.
+The host system for each test ran a version of Linux 3.14.1 with gcov instrumentation enabled.
+For the nine bugs that we could trigger directly, we ran the proof of concept exploit inside the guest.
 For the other 26, we ran the Trinity fuzzer inside the guest, exercising each system call 1,000,000 times with random inputs.
-Finally, we checked whether the lines of code containing each bug were reached in the host kernel, 
+Finally, we checked whether the lines of code containing each bug were reached in the host kernel,
 indicating that the guest could have triggered the bug.
 
 \noindent
@@ -81,35 +81,34 @@ In comparison, only 1 out of 35 bugs  (2.9\%) was triggered in Lind.
 
 \yiwen{My first try on the analysis, will work on this more.}
 
-When we take a closer look at the results, we can see that this outcome 
-has a lot to do with the design principles of those virtualization systems and 
-the way they handle system call requests. 
-Graphene \cite{Graphene-14} is a library OS that relies heavily on the Linux kernel to handle system calls. 
-Graphene's Linux library implements the Linux system calls using a variant of the 
-Drawbridge \cite{Drawbridge-11} ABI, which has 43 functions. Those ABI functions 
-are provided by the Platform Adaptation Layer (PAL), implemented using 50 calls 
-to the kernel. It turns out that 8 vulnerabilities in our test were triggered through using PAL's 
-50 system calls. On the contrary, Lind only relies on 33 system calls, which significantly reduces 
-risks and avoids 7 out of the 8 bugs. In fact, the design of Graphene requires extensive interaction 
-with the host kernel and have many risks. The developers of Graphene actually manually conducted 
-an analysis of 291 Linux vulnerabilities from 2011 to 2013, and found out that 144 out of 291 vulnerabilities 
-cannot be prevented with Graphene's design. 
+When we take a closer look at the results, we can see that these outcomes
+have a lot to do with the design principles of these virtualization systems and
+the way in which they handle system call requests.
+Graphene \cite{Graphene-14} is a library OS that relies heavily on the Linux kernel to handle system calls.
+Graphene's Linux library implements the Linux system calls using a variant of the
+Drawbridge \cite{Drawbridge-11} ABI, which has 43 functions. Those ABI functions
+are provided by the Platform Adaptation Layer (PAL), implemented using 50 calls
+to the kernel. It turns out that 8 vulnerabilities in our test were triggered by PAL's
+50 system calls. On the contrary, Lind only relies on 33 system calls, which significantly reduces
+risks and avoids 7 out of the 8 bugs. In fact, the design of Graphene requires extensive interaction
+with the host kernel and, hence, has many risks. The developers of Graphene manually conducted
+an analysis of 291 Linux vulnerabilities from 2011 to 2013, and found out that Graphene's design can not prevent 144 of those vulnerabilities.
 
-LXC \cite{LXC} is an operating-system-level virtualization that uses Linux kernel features to achieve containment. 
-Docker \cite{Docker} is a Linux container that runs on top of LXC. Those two containers have a very similar design feature 
-that they both rely directly on the Linux kernel to handle system call requests. Since system calls inside Docker are passed down 
-to LXC and then made into the kernel, we found out that all 8 kernel vulnerabilities triggered inside Docker were also triggered 
-with LXC. In addition, LXC interacts with the kernel via its \texttt{liblxc} library component, which triggered the extra 4 bugs. 
+LXC \cite{LXC} is an operating-system-level virtualization container that uses Linux kernel features to achieve containment.
+Docker \cite{Docker} is a Linux container that runs on top of LXC. The two containers have very similar design features
+that both rely directly on the Linux kernel to handle system call requests. Since system calls inside Docker are passed down
+to LXC and then into the kernel, we found out that all 8 kernel vulnerabilities triggered inside Docker were also triggered
+with LXC. In addition, LXC interacts with the kernel via its \texttt{liblxc} library component, which triggered the extra 4 bugs.
 
-It should be noted that although the design of Lind only accesses popular paths in the kernel and implements SafePOSIX inside 
-of a sandbox, there are a few things that Lind must rely on the kernel as fundamental building blocks. To be more specific, 
-\texttt{mmap} and \texttt{threads} cannot be recreated inside SafePOSIX without interaction with the kernel, since there has 
-to be some basic operations to access the hardware. Therefore, in our design of Lind, \texttt{mmap} and \texttt{threads} 
-are passed down to the kernel, and any vulnerabilities related with them are not avoidable. 
-CVE-2014-4171 is a bug triggered by \texttt{mmap} inside Lind. It was also triggered inside Docker, LXC, and Graphene, indicating 
-that those systems rely on the kernel to perform \texttt{mmap} operations as well.      
+It should be noted that although the design of Lind only accesses popular paths in the kernel and implements SafePOSIX inside
+of a sandbox, there are a few fundamental building blocks for which Lind must rely on the kernel. To be more specific,
+\texttt{mmap} and \texttt{threads} cannot be recreated inside SafePOSIX without interaction with the kernel, since there has
+to be some basic operations to access the hardware. Therefore, in our design of Lind, \texttt{mmap} and \texttt{threads}
+are passed down to the kernel, and any vulnerabilities related to them are  unavoidable.
+CVE-2014-4171 is a bug triggered by \texttt{mmap} inside Lind. It was also triggered inside Docker, LXC, and Graphene, indicating
+that those systems rely on the kernel to perform \texttt{mmap} operations as well.
 
-Our initial results suggest that bugs are usually triggered by extensive interaction with the unpopular paths in the kernel through 
+Our initial results suggest that bugs are usually triggered by extensive interaction with the unpopular paths in the kernel through
 complex system calls, or basic system calls
 with complicated or rarely used flags. The \emph{Lock-in-Pop} design, and thus Lind,
 provides strictly controlled access to the kernel, and so, poses
@@ -136,72 +135,72 @@ the least risk.
 
 \begin{tabular}{|p{1.7cm}|p{.6cm}|p{.65cm}|p{.65cm}|p{.9cm}|p{.6cm}|}\hline
 
-\multirow{2}{1.7cm}{\bf Vulnerability}    &  \multirow{2}{.6cm}{\bf Native Linux} 
+\multirow{2}{1.7cm}{\bf Vulnerability}    &  \multirow{2}{.6cm}{\bf Native Linux}
  & \multirow{2}{.6cm}{\bf Docker} & \multirow{2}{.6cm}{\bf LXC} &
 \multirow{2}{1cm}{\bf Graphene} & \multirow{2}{.6cm}{\bf Lind} \\
 & & & & & \\
 \hline
 
- CVE-2015-5706 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2015-5706 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\multirow{1}{1cm}{{\color{red}\ding{51}}} & 
+\multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  \\
 
- CVE-2015-0239 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2015-0239 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-9584 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-9584 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-9529 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-9529 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-9322 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-9322 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
 \\
 
- CVE-2014-9090 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-9090 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-8989 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-8989 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\multirow{1}{1cm}{{\color{red}\ding{51}}} & 
+\multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  \\
 
- CVE-2014-8559 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-8559 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-8369 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-8369 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-8160 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-8160 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-8134 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-8134 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
 \\
 
- CVE-2014-8133 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-8133 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-8086 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-8086 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55} & \ding{55}  \\
 
- CVE-2014-7975 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-7975 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
@@ -209,11 +208,11 @@ the least risk.
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-7842 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-7842 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-7826 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-7826 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55}  &
 \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
 \\
@@ -223,43 +222,43 @@ the least risk.
 \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}
 \\
 
- CVE-2014-7283 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-7283 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-5207 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-5207 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-5206 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-5206 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  & \ding{55}
 \\
 
- CVE-2014-5045 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-5045 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-4943 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-4943 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-4667 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-4667 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \multirow{1}{1cm}{{\color{red}\ding{51}}}  & \ding{55}  \\
 
- CVE-2014-4508 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-4508 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-4171 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-4171 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \multirow{1}{1cm}{{\color{red}\ding{51}}} &
-\multirow{1}{1cm}{{\color{red}\ding{51}}} & 
+\multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \multirow{1}{1cm}{{\color{red}\ding{51}}}  \\
 
- CVE-2014-4157 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-4157 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
@@ -269,42 +268,42 @@ the least risk.
 \ding{55}  & \ding{55}
 \\
 
- CVE-2014-3940 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-3940 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \multirow{1}{1cm}{{\color{red}\ding{51}}} & \multirow{1}{1cm}{{\color{red}\ding{51}}} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-3917 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-3917 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
 \ding{55}  & \ding{55}  \\
 
- CVE-2014-3153 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-3153 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
   \ding{55}  & \ding{55}  \\
 
- CVE-2014-3144 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-3144 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-3122 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-3122 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-2851 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-2851 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 
- CVE-2014-0206 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} & 
+ CVE-2014-0206 & \multirow{1}{.7cm}{{\color{red}\ding{51}}} &
  \ding{55} & \ding{55} &
  \ding{55}  & \ding{55}  \\
 \hline
 
- {\bf Vulnerabilities Triggered} & \multirow{2}{1cm}{\bf 35/35 (100\%)} & {\bf 8/35 (22.9\%)} & 
+ {\bf Vulnerabilities Triggered} & \multirow{2}{1cm}{\bf 35/35 (100\%)} & {\bf 8/35 (22.9\%)} &
  {\bf 12/35 (34.3\%)} &
  {\bf 8/35 (22.9\%)}  & {\bf 1/35 (2.9\%)}  \\
 \hline
 \end{tabular}
 
-\caption {\small Linux Kernel Bugs, and Vulnerabilities in Different Virtualization Systems
+\caption {\small Linux kernel bugs, and vulnerabilities in different virtualization systems
 ({\color{red}\ding{51}}: vulnerability triggered;
 \ding{55}: vulnerability not triggered).}
 
@@ -360,7 +359,7 @@ each tested system,
 and further analyzed the components of those traces. These results,
 shown in Table \ref{table:trace-systems}, affirm that Lind accessed the
 least amount of code in the OS
-kernel. More importantly, all the kernel code it accessed was in the
+kernel. More importantly, all the kernel code it did access was in the
 popular kernel paths that contain fewer bugs (Section~{\ref{Verification-of-Hypothesis}}).
 A large portion of the kernel paths accessed by Lind lie in
 \texttt{fs/} to perform file system operations.
@@ -374,12 +373,12 @@ permitted for \texttt{open()}.
 The other virtualization systems all accessed a substantial number of code
 paths in the kernel, and they all accessed a larger section from the unpopular
 paths. This is because they rely on the underlying host kernel to implement
-complex functionality, and therefore have more dependence on complex system
-calls and allow extensive use of complicated flags.  For example, Graphene's
+complex functionality. Therefore, they are more dependent on complex system
+calls, and allow extensive use of complicated flags.  For example, Graphene's
 system call API supports multiple processes via \texttt{fork()} and signals,
 and therefore accesses many risky lines of code. \brendan{Is there a better
 example of complex kernel functionality that Graphene uses? It would be better
-if it were something that Lind also supports.} 
+if it were something that Lind also supports.}
 \yiwen{Will add a better example.}
 By default, Docker does not wrap
 or filter system calls made by applications running in a container. Thus,
@@ -405,9 +404,9 @@ to obtain the reachable kernel trace in Linux kernel 3.14.1.
 
 \noindent
 \textbf{Results.}
-To understand Lind's security properties, we need to see how much kernel is exposed to
+\lois{Aren't the following two sentences part of "set-up" is about what was done, not the results} To understand Lind's security properties, we need to see how much kernel is exposed to
 SafePOSIX. Since our SafePOSIX runs inside the Repy sandbox kernel,
-fuzzing it suffices to determine the portion of the kernel reachable from 
+fuzzing it suffices to determine the portion of the kernel reachable from
 inside the Repy sandbox.
 
 \begin{table}
@@ -456,8 +455,8 @@ kernel bugs.
 \noindent
 \textbf{Setup.}
 %To test the execution time overhead in Lind for running real-world applications,
-We ran a few programs of different types to understand Lind's performance 
-impact.  All applications ran unaltered and correctly in Lind. To run the 
+We ran a few programs of different types to understand Lind's performance
+impact.  All applications ran unaltered and correctly in Lind. To run the
 applications, it was sufficient to just recompile the unmodified
 source code using NaCl's compiler and Lind's \texttt{glibc} to call
 into SafePOSIX.
@@ -467,11 +466,11 @@ To measure Lind's runtime performance overhead compared to Native Linux
 we first compiled and ran six widely-used legacy applications:
 a prime number calculator Primes 1.0,
 GNU Grep 2.9, GNU Wget 1.13, GNU Coreutils 8.9,
-GNU Netcat 0.7.1, and K\&R Cat. 
-We also ran more extensive benchmarks on two large legacy applications, 
+GNU Netcat 0.7.1, and K\&R Cat.
+We also ran more extensive benchmarks on two large legacy applications,
 Tor 0.2.3 and Apache 2.0.64 in Lind.
 %Both Tor and Apache were recompiled with NaCl's compiler and ran in Lind.
-We used Tor's built-in benchmark program and Apache's benchmarking tool 
+We used Tor's built-in benchmark program and Apache's benchmarking tool
 \texttt{ab} to perform basic testing operations and record the execution time.
 
 \begin{table}
@@ -509,9 +508,9 @@ program. We expect other CPU bound processes to behave similarly.
 
 The other five applications experienced slowdowns roughly ranging from 3x to 6x.
 All of them require repeated calls into SafePOSIX, and this additional SafePOSIX
-computation produced the additional overhead. 
-The fact that the total execution time was limited 
-to the magnitude of 10,000 ms ensures that the 
+computation produced the additional overhead.
+The fact that the total execution time was limited
+to the magnitude of 10,000 ms ensures that the
 user experience is still reasonably efficient.
 
 \begin{table}
@@ -567,7 +566,7 @@ SafePOSIX re-creation.
 As shown above, Lind generally incurs some performance overhead.
 However, performance slowdown is common in virtualization systems.
 For example, Graphene \cite{Graphene-14} also shows an overhead ranged from
-1.4x to 2x when running applications such as Apache web server and Unixbench suite \cite{UnixBench}. 
+1.4x to 2x when running applications such as Apache web server and Unixbench suite \cite{UnixBench}.
 Lind shares the same magnitude of slowdown with Graphene in many cases.
 Since an attack on the kernel can have devastating
 consequences, %at this initial stage,
