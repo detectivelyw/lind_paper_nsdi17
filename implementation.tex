@@ -1,7 +1,7 @@
 \section{Implementation of Lind}
 \label{sec.implementation}
 
-To test our \lip design, we used it to implement a secure virtual machine\lois{again, do we need to add "Library OS"?}
+To test our \lip design, we used it to implement a secure library OS virtual machine 
 called Lind\footnote{\scriptsize Lind is an Old English word for a lightweight, but still strong shield
 constructed from two layers of linden wood.}.  Lind is divided into a
 \emph{computational module} that enforces software fault isolation (SFI) and a
@@ -29,17 +29,14 @@ these calls would usually be forwarded to the host OS kernel. In Lind, we
 modified NaCl to instead forward these calls to our library OS, SafePOSIX
 (described in detail below).
 
-\brendan{We don't seem to actually say more than about one sentence about
-SafePOSIX below before launching into the example. Maybe we should fix that?}
-\yiwen{I tried to fix this. Please see the new content in 5.2.}
-
 \paragraph{Seattle's Repy.}
 
 To build an API that can access the safe parts of the underlying kernel while
 still supporting existing applications, we need two things. First, we need a
 restricted sandbox that only allows access to commonly-used kernel paths. We
 used Seattle's Repy~\cite{Repy-10} sandbox to perform this task. Second, we
-have to provide complex system functions to user programs, for which we implemented the widely accepted standard POSIX interface on top of Repy.
+have to provide complex system functions to user programs, 
+for which we implemented the widely accepted standard POSIX interface on top of Repy.
 
 Because the sandbox kernel is the only code that will be in direct contact with host
 system calls, it should be small (to make it easy to audit), while providing
@@ -96,7 +93,9 @@ Therefore, the interaction with the host OS kernel is strictly controlled.
 Second, the SafePOSIX re-creation is run within the Repy programming language sandbox,
 which properly isolates any bugs inside SafePOSIX itself.
 
-We now offer a more detailed example of how SafePOSIX works by reviewing how it re-creates a file system. \lois{Is this extended example really needed?}
+We now offer a more detailed example of how SafePOSIX works by reviewing how it re-creates a file system. 
+\lois{Is this extended example really needed?} 
+\yiwen{This example could be cut or shortened.} 
 The core of the SafePOSIX file system is the \texttt{open}, \texttt{close}, \texttt{read}, \texttt{write},
 \texttt{getdents}, \texttt{stat}, \texttt{mkdir} and \texttt{rmdir} system calls.
 These give the program the illusion of a normal file system even though Repy does not allow directories or access to file attributes.
