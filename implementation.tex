@@ -93,9 +93,7 @@ Therefore, the interaction with the host OS kernel is strictly controlled.
 Second, the SafePOSIX re-creation is run within the Repy programming language sandbox,
 which properly isolates any bugs inside SafePOSIX itself.
 
-We now offer a more detailed example of how SafePOSIX works by reviewing how it re-creates a file system.
-\lois{Is this extended example really needed?}
-\yiwen{This example could be cut or shortened.}
+We now offer a more detailed example of how SafePOSIX works by reviewing how it re-creates a file system. 
 The core of the SafePOSIX file system is the \texttt{open}, \texttt{close}, \texttt{read}, \texttt{write},
 \texttt{getdents}, \texttt{stat}, \texttt{mkdir} and \texttt{rmdir} system calls.
 These give the program the illusion of a normal file system even though Repy does not allow directories or access to file attributes.
@@ -119,13 +117,13 @@ The simple names for the backing files allow us to store the real file name in t
 necessary step because of Repy's strict rules about the content of filenames.
 Finally, the call returns the index into the file handle table or, if an error was encountered, an error number to which the Unix \texttt{errno} value is set.
 
-\lois{If nothing else, drop this second example} Here is another example of how SafePOSIX re-creation would work with the symbolic link function.
-Instead of relying on the underlying kernel to create symbolic links between real files
-in the host file system, SafePOSIX builds and maintains its own metadata to represent a virtual symbolic link
-between files within its system. In this case, if there is a bug in this symbolic link function,
-such as creation of a link with a deleted file, the bug will be contained within the SafePOSIX re-creation.
-As a result, instead of creating a security issue, the application is denied privileged access to the host OS kernel.
-Therefore, attackers will not be able to leverage a bug within the symbolic link function to exploit the host kernel.
+%Here is another example of how SafePOSIX re-creation would work with the symbolic link function.
+%Instead of relying on the underlying kernel to create symbolic links between real files
+%in the host file system, SafePOSIX builds and maintains its own metadata to represent a virtual symbolic link
+%between files within its system. In this case, if there is a bug in this symbolic link function,
+%such as creation of a link with a deleted file, the bug will be contained within the SafePOSIX re-creation.
+%As a result, instead of creating a security issue, the application is denied privileged access to the host OS kernel.
+%Therefore, attackers will not be able to leverage a bug within the symbolic link function to exploit the host kernel.
 
-As described in the above examples, the SafePOSIX re-creation only uses a few Repy sandbox kernel functions to access the hardware.
+As described in the above example, the SafePOSIX re-creation only uses a few Repy sandbox kernel functions to access the hardware.
 It creates and maintains its own metadata and data structures, using the Repy programming language sandbox.
