@@ -17,7 +17,7 @@ functionality re-creation within a secure environment for complex implementation
 \subsection{System Call Interposition (SCI)}
 SCI systems~\cite{Janus0:96, Janus:99} filter system calls to mediate requests
 from untrusted user code instead of allowing it to go directly to the kernel.
-The filter checks a pre-defined security policy to decide which system calls are
+The filter checks a predefined security policy to decide which system calls are
 allowed to pass to the underlying kernel, and which ones must be stopped.
 Figure \ref{fig:design_system_call_interposition} illustrates how
 system call interposition works. System administrators have direct access to a policy engine that sets and changes security policies.
@@ -79,30 +79,30 @@ When it has to %communicate with the kernel to
 access resources like memory, CPU, and disk storage, the system accesses the kernel directly with
 its underlying TCB code.
 %which can access the kernel directly.
-For example, Graphene \cite{Graphene-14} re-creates
-its own Linux system calls in
-\texttt{libLinux.so}. When it needs to acquire resources from
-the kernel, it uses a
-Platform Adaptation Layer (PAL) with access to the kernel,
-and provides basic API functions to the OS library.
+For example, Graphene \cite{Graphene-14} re-creates its own Linux system calls
+in \texttt{libLinux.so}. When it needs to acquire resources from the kernel, it
+uses a Platform Adaptation Layer (PAL) with access to the kernel, and provides
+basic API functions to the OS library.
 
 Functionality re-creation provides a more realistic solution to building
 virtualization systems than earlier efforts.
-However, hundreds of vulnerabilities have been
-reported in existing virtualization systems over the past ten years~\cite{NVD}.
-Such systems often
-introduce large codebases and enlarged TCBs. In addition, the
+However, functionality recreation has two pitfalls: first, if the recreated functionality resides in the TCB of the virtualization system, then vulnerabilities there can expose the host OS to attack as well.
+For example, hundreds of vulnerabilities have been
+reported in existing virtualization systems such as QEMU and VMWare over the past ten years~\cite{NVD}.
+In addition, the
 complex semantics of OS functions can easily lead to the emergence of bugs during
 the re-creation process. Some of these vulnerabilities
-can directly cause a privilege escalation, which allows attackers to escape the sandbox
+can directly lead to privilege escalation, which allows attackers to escape the sandbox
 and execute arbitrary code on the host OS.
 For example, a vulnerability in VMWare's codebase caused by buffer overflows in the VIX
 API allowed local users to
 gain privilege to execute arbitrary code in the host
-OS, even shellcode to access the kernel of the host OS~\cite{CVE-2008-2100}.
+OS~\cite{CVE-2008-2100}.
 
+Second, functionality recreation may assume that the underlying host kernel is correct. As we have seen, this assumption is often incorrect; host kernels may have bugs in their implementation that leave them vulnerable to attack. Thus, to provide the greatest assurance that the host kernel will not be exposed to malicious user programs, a functional recreation should try to avoid kernel APIs that are likely to contain flaws. We discuss this approach in detail next.
 
-\subsection{Lock-in-Pop: Staying on the Beaten Path }
+\subsection{Lock-in-Pop: Staying on the Beaten Path}
+
 As discussed above, a weakness of the previous approaches is the inevitable contact
 between the privileged kernel code and an untrusted application.
 By leveraging our key observation
