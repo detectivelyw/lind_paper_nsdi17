@@ -7,9 +7,9 @@ The literature referenced in this section includes past efforts to define safety
 and to quantify areas of risk in an OS kernel, as well as background information
  on technologies incorporated into Lind.
 
-\textbf{Safety metrics.} 
-\lois{Do we need to repeat this information that was presented in Section 3?} 
-\yiwen{I vote to cut this ``Safety metrics'' section.} 
+\textbf{Safety metrics.}
+\lois{Do we need to repeat this information that was presented in Section 3?}
+\yiwen{I vote to cut this ``Safety metrics'' section.} \lois{I agree. It's mostly redundant}
 As discussed in Section~\ref{sec.metric}, a number of metrics have been put forth over the years to identify where vulnerabilities might be found in code.
 One such approach looked at identifying a correlation between the presence of bugs
 and certain directories or modules within a system (Chou~\cite{PittSFIeld},
@@ -24,14 +24,14 @@ software design.
 Alhazmi~\cite{alhazmi2008application}
 used metrics like defect density and fault exposure ratio to assess potential risk,
 while Zimmermann~\cite{zimmermann2010searching}
- pointed towards code complexity, and code churn (the total added/modified/deleted
+ pointed towards code complexity and code churn (the total added/modified/deleted
 lines of code) to predict vulnerabilities. Kim in~\cite{kim2007vulnerability} analyzed
 the correlation between shared code size and shared vulnerabilities in
 successive versions of a software system. In~\cite{engler2001bugs}, Engler analyzed
 system code by static analysis to look for contradictions, such as acquired locks that are
 not released. While
 these prior approaches can be useful for determining software readiness for release, and
-evaluating the risk of if vulnerabilities are exploited,
+evaluating the risk if vulnerabilities are exploited,
 they are less useful in providing insights for secure system design.
 
 Lastly, prior work has also examined the evolution of kernel defects over time, including
@@ -136,4 +136,4 @@ Lind re-creates complex OS functions through memory-safe Repy
 code, relying on only a limited set of system functions from the Repy
 sandbox. Furthermore, Drawbridge, Bascule or Haven
 do not have a sandbox environment to properly contain
-buggy or malicious behavior, while Lind does have this more secure environment. 
+buggy or malicious behavior, while Lind can offer this more secure environment.
