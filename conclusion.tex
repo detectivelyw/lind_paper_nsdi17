@@ -3,8 +3,8 @@
 
 In this paper, we propose a new security metric based on quantitative measures of kernel code execution when running user applications.
 After determining that fewer bugs exist in popular paths associated with frequently-used
-programs, we devise a new design for secure virtual machines, called \lip.
-As the name implies, the design scheme locks access to all
+programs, we devise a new design for a secure virtual machine called \lip.
+As the name implies, the design scheme locks away access to all
 kernel code except that found in paths frequently used by
 popular programs. We test the \lip idea by implementing a prototype system
 called Lind, which features a minimized TCB and prevents direct access to application
@@ -15,4 +15,4 @@ In tests against Docker, LXC, and Graphene, Lind emerged as the most effective s
 zero-day Linux kernel bugs.
 
 So that other researchers may replicate our results, we make all of the kernel
-trace data, benchmark data, and source code for this paper available \redact. 
+trace data, benchmark data, and source code for this paper available \redact.
