@@ -1,54 +1,51 @@
 \section{Related Work}
 \label{sec.related_work}
 
-This section summarizes a number of earlier initiatives to ensure the safety of
- privileged code. %in user space and kernel space.
-The literature referenced in this section includes past efforts to define safety metrics,
-and to quantify areas of risk in an OS kernel, as well as background information
- on technologies incorporated into Lind.
+This section summarizes a number of earlier initiatives to ensure the safety of privileged code. 
+The literature referenced in this section includes past efforts to design and build virtualized systems, 
+as well as background information on technologies incorporated into Lind.
 
-\textbf{Safety metrics.}
-\lois{Do we need to repeat this information that was presented in Section 3?}
-\yiwen{I vote to cut this ``Safety metrics'' section.} \lois{I agree. It's mostly redundant}
-As discussed in Section~\ref{sec.metric}, a number of metrics have been put forth over the years to identify where vulnerabilities might be found in code.
-One such approach looked at identifying a correlation between the presence of bugs
-and certain directories or modules within a system (Chou~\cite{PittSFIeld},
-Palix~\cite{palix2011faults}.)
-However, this approach does not necessarily
-provide effective detection and defense against kernel bugs, as our test of the
-Chou metric in Section~\ref{sec.metric} attests.
+%\textbf{Safety metrics.}
+%As discussed in Section~\ref{sec.metric}, a number of metrics have been put forth over the years to identify where vulnerabilities might be found in code.
+%One such approach looked at identifying a correlation between the presence of bugs
+%and certain directories or modules within a system (Chou~\cite{PittSFIeld},
+%Palix~\cite{palix2011faults}.)
+%However, this approach does not necessarily
+%provide effective detection and defense against kernel bugs, as our test of the
+%Chou metric in Section~\ref{sec.metric} attests.
 
-Other approaches to identifying kernel vulnerabilities grew out of research in
+%Other approaches to identifying kernel vulnerabilities grew out of research in
 %code complexity and code comprehension in
-software design.
-Alhazmi~\cite{alhazmi2008application}
-used metrics like defect density and fault exposure ratio to assess potential risk,
-while Zimmermann~\cite{zimmermann2010searching}
- pointed towards code complexity and code churn (the total added/modified/deleted
-lines of code) to predict vulnerabilities. Kim in~\cite{kim2007vulnerability} analyzed
-the correlation between shared code size and shared vulnerabilities in
-successive versions of a software system. In~\cite{engler2001bugs}, Engler analyzed
-system code by static analysis to look for contradictions, such as acquired locks that are
-not released. While
-these prior approaches can be useful for determining software readiness for release, and
-evaluating the risk if vulnerabilities are exploited,
-they are less useful in providing insights for secure system design.
+%software design.
+%Alhazmi~\cite{alhazmi2008application}
+%used metrics like defect density and fault exposure ratio to assess potential risk,
+%while Zimmermann~\cite{zimmermann2010searching}
+ %pointed towards code complexity and code churn (the total added/modified/deleted
+%lines of code) to predict vulnerabilities. Kim in~\cite{kim2007vulnerability} analyzed
+%the correlation between shared code size and shared vulnerabilities in
+%successive versions of a software system. In~\cite{engler2001bugs}, Engler analyzed
+%system code by static analysis to look for contradictions, such as acquired locks that are
+%not released. While
+%these prior approaches can be useful for determining software readiness for release, and
+%evaluating the risk if vulnerabilities are exploited,
+%they are less useful in providing insights for secure system design.
 
-Lastly, prior work has also examined the evolution of kernel defects over time, including
-Ozment~\cite{ozment2006milk} (see Section~\ref{sec.metric}) and Li~\cite{li2006have}.
-Li found a decrease in memory-related
-bugs, and identified semantic bugs as being the dominant root cause of these
-defects.
+%Lastly, prior work has also examined the evolution of kernel defects over time, including
+%Ozment~\cite{ozment2006milk} (see Section~\ref{sec.metric}) and Li~\cite{li2006have}.
+%Li found a decrease in memory-related
+%bugs, and identified semantic bugs as being the dominant root cause of these
+%defects.
 % \lois{this sentence about Li says nothing and reads like
 % nonsense. He reported an increase in the bugs by studying the number of bugs?
 %I checked the paper but had no clue what this referred to}
 %\yiwen{I fixed it. Please check.}
-However, unlike Lind, neither of these approaches provides insights
-on how vulnerabilities are distributed.
+%However, unlike Lind, neither of these approaches provides insights
+%on how vulnerabilities are distributed.
 
 %Much work has been done in analyzing system faults using techniques in
 %software engineering. For example,
 
+\noindent
 \textbf{Virtualization systems.}
 Lind incorporates a number of existing virtualization techniques, which are
 described below.
