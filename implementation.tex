@@ -1,7 +1,7 @@
 \section{Implementation of Lind}
 \label{sec.implementation}
 
-To test our \lip design, we used it to implement a secure library OS virtual machine 
+To test our \lip design, we used it to implement a secure library OS virtual machine
 called Lind\footnote{\scriptsize Lind is an Old English word for a lightweight, but still strong shield
 constructed from two layers of linden wood.}.  Lind is divided into a
 \emph{computational module} that enforces software fault isolation (SFI) and a
@@ -35,7 +35,7 @@ To build an API that can access the safe parts of the underlying kernel while
 still supporting existing applications, we need two things. First, we need a
 restricted sandbox that only allows access to commonly-used kernel paths. We
 used Seattle's Repy~\cite{Repy-10} sandbox to perform this task. Second, we
-have to provide complex system functions to user programs, 
+have to provide complex system functions to user programs,
 for which we implemented the widely accepted standard POSIX interface on top of Repy.
 
 Because the sandbox kernel is the only code that will be in direct contact with host
@@ -87,15 +87,15 @@ to SafePOSIX. The SafePOSIX re-creation serves the system call request, marshals
 returns it back to NaCl. Eventually, the result is returned as the appropriate
 native type to the calling program.
 
-The SafePOSIX is safe because of two design principles.
+SafePOSIX is safe because of two design principles.
 First, its re-creation only relies on a small set of basic Repy functions (Table \ref{table:RepyKernel}).
 Therefore, the interaction with the host OS kernel is strictly controlled.
 Second, the SafePOSIX re-creation is run within the Repy programming language sandbox,
 which properly isolates any bugs inside SafePOSIX itself.
 
-We now offer a more detailed example of how SafePOSIX works by reviewing how it re-creates a file system. 
-\lois{Is this extended example really needed?} 
-\yiwen{This example could be cut or shortened.} 
+We now offer a more detailed example of how SafePOSIX works by reviewing how it re-creates a file system.
+\lois{Is this extended example really needed?}
+\yiwen{This example could be cut or shortened.}
 The core of the SafePOSIX file system is the \texttt{open}, \texttt{close}, \texttt{read}, \texttt{write},
 \texttt{getdents}, \texttt{stat}, \texttt{mkdir} and \texttt{rmdir} system calls.
 These give the program the illusion of a normal file system even though Repy does not allow directories or access to file attributes.
@@ -116,10 +116,10 @@ It then picks a free entry from the file handle table, and stores a link to the 
 If the \texttt{create} flag is passed, it adds an entry to the inode and inode lookup table, and creates a new backing file.
 The backing files are not named the same as the actual files, but rather just ``linddata.001,'' ``linddata.002,'' etc.
 The simple names for the backing files allow us to store the real file name in the metadata, a
-necessary step because there of Repy's strict rules about the content of a filename.
+necessary step because of Repy's strict rules about the content of filenames.
 Finally, the call returns the index into the file handle table or, if an error was encountered, an error number to which the Unix \texttt{errno} value is set.
 
-Here is another example of how SafePOSIX re-creation would work with the symbolic link function.
+\lois{If nothing else, drop this second example} Here is another example of how SafePOSIX re-creation would work with the symbolic link function.
 Instead of relying on the underlying kernel to create symbolic links between real files
 in the host file system, SafePOSIX builds and maintains its own metadata to represent a virtual symbolic link
 between files within its system. In this case, if there is a bug in this symbolic link function,
