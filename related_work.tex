@@ -91,7 +91,7 @@ is built using Repy, which is a programming language with a very small TCB, mini
 \textit{OS virtualization}
 techniques include
 bare-metal hardware virtualization, such as VMware ESX Server, Xen~\cite{Xen-03},
-LXC~\cite{LXC}, BSD's jail, Solaris zones, and Hyper-V, and
+and Hyper-V, container systems such as LXC~\cite{LXC}, BSD's jail, and Solaris zones, and
 hosted hypervisor virtualization, such as VMware
 Workstation, VMware Server, VirtualPC and VirtualBox.
 Security by isolation \cite{Qubes, Overshadow, SecureVM, HypSec}
@@ -127,8 +127,7 @@ Tsai, et al. developed Graphene \cite{Graphene-14}, a library OS that
 executes both single and
 multi-process applications with low performance overheads.
 
-While library OSes rely extensively on
-the underlying kernels to perform system functions,
+While typical library OSes trust the underlying host kernels to perform many system functions,
 Lind re-creates complex OS functions through memory-safe Repy
 code, relying on only a limited set of system functions from the Repy
 sandbox. Furthermore, Drawbridge, Bascule or Haven
