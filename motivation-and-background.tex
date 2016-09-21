@@ -1,6 +1,9 @@
 \section{Goals and Threat Model}
 \label{sec.motivation-and-background}
 
+In this section, we define the scope of our efforts. We also briefly note why
+this study does not evaluate a few existing design schemes.
+
 \textbf{Goals.}
 Our goal is to design and build a secure virtualization system that allows
 untrusted programs to run on an unpatched and vulnerable host OS (Linux OS in
@@ -14,8 +17,6 @@ interposition module, or a library OS system. Our intent is to
 build such a system capable of protecting a vulnerable underlying host OS,
 while running untrusted user programs.
 
-In this section, we define the scope of our efforts. We also briefly note why
-this study does not evaluate a few existing design schemes.
 
 \noindent
 \textbf{Threat model.}
@@ -23,7 +24,7 @@ this study does not evaluate a few existing design schemes.
 When an attack attempt is staged
 on a host OS in a virtualization system,
 %Furthermore, %we anticipate that
-the exploit can be done either irectly or indirectly.
+the exploit can be done either directly or indirectly.
 In a direct exploit, the attacker accesses a vulnerable portion of the host OS's kernel
 using a crafted attack code. In an indirect exploit,
 the attacker first takes advantage of a vulnerability in the virtualization system itself
@@ -72,11 +73,10 @@ ways of accessing hardware resources, and require different measuring approaches
 
 In addition, we exclude evaluation and direct comparison with full virtualization virtual machines,
 such as VirtualBox \cite{VirtualBox}, VMWare Workstation \cite{VMWare-Workstation}, and QEMU \cite{QEMU}.
-For those full virtualization systems,
-the virtual machine simulates hardware to allow an unmodified guest OS to run. The goal
+Such systems simulate hardware to allow an unmodified guest OS to run. The goal
 of our design is to substitute the large and complex TCB required for a guest OS, with a single-process
-program with a small TCB and a secure isolated environment. With different goals, our proposed design is fundamentally
-a different approach from full virtualization. As a result, direct measurement and comparison between full virtualization
+program with a small TCB and a secure isolated environment. With different goals, our proposed design is 
+a fundamentally different approach from full virtualization. As a result, direct measurement and comparison between full virtualization
 and our design is
 beyond the scope of this work.
 
