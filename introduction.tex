@@ -33,8 +33,8 @@ software must not contain any bugs that could allow the program to escape the
 machine's containment and interact directly with the host OS.
 Unfortunately, these issues are very common in OSVMs. Virtualbox reports more than 40 such
 vulnerabilities~\cite{Virtualbox-Vulnerabilities} and more than 100 bugs have
-been found in VMware Workstation~\cite{VMWare-Vulnerabilities}.  Given the large amount of complex code needed for such a system, it is understandable that
-flaws could occur,
+been found in VMware Workstation~\cite{VMWare-Vulnerabilities}. 
+Given the large amount of complex code needed for such a system, it is understandable that flaws could occur,
 leaving tens of millions of user machines at risk~\cite{linux-0day}.
 
 Secondly, isolation will not work if a malicious
@@ -105,9 +105,14 @@ so long as the minimal sandbox remains uncompromised.
 %a memory-safe programming language sandbox.
 
 To demonstrate the viability of \lip, we use it to implement a
-prototype virtual machine that can offer enhanced security without sacrificing
+prototype library OS virtual machine that can offer enhanced security without sacrificing
 basic functionality. Dubbed Lind, it pairs two components -- Google's Native Client
-(NaCl) and Seattle's Repy. \lois{Do we want to mention those two products. I thought the functions were important but not the particular brand of component chosen, since the system is supposed to be flexible} NaCl serves as a computational module that isolates
+(NaCl) and Seattle's Repy. 
+\lois{Do we want to mention those two products. 
+I thought the functions were important but not the particular brand of component chosen, 
+since the system is supposed to be flexible} 
+\yiwen{I think this is Okay. Since we are talking about the actual implementation of Lind.} 
+NaCl serves as a computational module that isolates 
 binaries, providing memory safety for legacy programs running in our OSVM.
 It also passes system calls invoked by the program to the operating system interface, called SafePOSIX.
 SafePOSIX re-creates the broader POSIX functionalities needed by applications.
@@ -151,7 +156,7 @@ The need for complex functionality is addressed by re-creating riskier systems c
 in a memory-safe programming language within a secure sandbox.
 
 \item
-We build a prototype virtual machine, Lind, \lois{we need to be consistent in how we describe Lind. Is it a virtual machine or a Library OS machine, as its called in the abstract} using the \lip design,
+We build a prototype library OS virtual machine, Lind, using the \lip design, 
 and test its effectiveness against three other security systems. We find that
 Lind exposes 5-14x fewer kernel code paths containing bugs than prior production and
 academic systems.
