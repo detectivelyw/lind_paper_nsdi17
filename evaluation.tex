@@ -387,10 +387,7 @@ paths. This is because they rely on the underlying host kernel to implement
 complex functionality. Therefore, they are more dependent on complex system
 calls, and allow extensive use of complicated flags.  For example, Graphene's
 system call API supports multiple processes via \texttt{fork()} and signals,
-and therefore accesses many risky lines of code. \brendan{Is there a better
-example of complex kernel functionality that Graphene uses? It would be better
-if it were something that Lind also supports.}
-\yiwen{I tried to provide a better example here.}
+and therefore accesses many risky lines of code. 
 For basic and frequently-used system calls like \texttt{open},
 Graphene allows rarely-used flags, such as \texttt{O\_TMPFILE} and \texttt{O\_NONBLOCK}
 to pass down to the kernel, thus reaching risky lines in the kernel that could lead to bugs.
