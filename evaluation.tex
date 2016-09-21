@@ -79,8 +79,6 @@ while the other programs had lower rates: 8/35 (22.9\%)  in Docker,
 12/35 (34.3\%)  in LXC, and 8/35 (22.9\%) bugs in Graphene.
 In comparison, only 1 out of 35 bugs  (2.9\%) was triggered in Lind.
 
-\yiwen{My first try on the analysis, will work on this more.}
-
 When we take a closer look at the results, we can see that these outcomes
 have a lot to do with the design principles of these virtualization systems and
 the way in which they handle system call requests.
@@ -90,7 +88,20 @@ Drawbridge \cite{Drawbridge-11} ABI, which has 43 functions. Those ABI functions
 are provided by the Platform Adaptation Layer (PAL), implemented using 50 calls
 to the kernel. It turns out that 8 vulnerabilities in our test were triggered by PAL's
 50 system calls. On the contrary, Lind only relies on 33 system calls, which significantly reduces
-risks and avoids 7 out of the 8 bugs. In fact, the design of Graphene requires extensive interaction
+risks and avoids 7 out of the 8 bugs. 
+
+Graphene supports many complex and risky system calls, such as \texttt{execve}, \texttt{msgsnd}, and \texttt{futex}, 
+that reached the risky (unpopular) portion of the kernel and eventually led to kernel bugs. 
+In addition, for many basic and frequently-used system calls like \texttt{open} and \texttt{read}, 
+Graphene allows rarely-used flags and arguments to be passed down to the kernel, which triggered bugs in 
+the unpopular paths. 
+In Lind, all system calls only allow a restricted set of simple and frequently-used flags and arguments. 
+One example from our test result is that Graphene allows \texttt{O\_TMPFILE} flag to pass down with 
+\texttt{path\_openat()} system call. This reached risky lines of code inside \texttt{fs/namei.c} in the kernel, 
+and eventually triggered bug CVE-2015-5706. 
+The same bug was triggered in the same way inside Docker and LXC, but was successfully prevented by Lind, 
+due to the strict control on flags and arguments. 
+In fact, the design of Graphene requires extensive interaction
 with the host kernel and, hence, has many risks. The developers of Graphene manually conducted
 an analysis of 291 Linux vulnerabilities from 2011 to 2013, and found out that Graphene's design can not prevent 144 of those vulnerabilities.
 
@@ -379,12 +390,13 @@ system call API supports multiple processes via \texttt{fork()} and signals,
 and therefore accesses many risky lines of code. \brendan{Is there a better
 example of complex kernel functionality that Graphene uses? It would be better
 if it were something that Lind also supports.}
-\yiwen{Will add a better example.}
-By default, Docker does not wrap
-or filter system calls made by applications running in a container. Thus,
-programs have access to rarely used flags, such as \texttt{O\_TMPFILE},
-\texttt{O\_NONBLOCK}, and \texttt{O\_DSYNC}, which can reach potentially
-dangerous lines of code.
+\yiwen{I tried to provide a better example here.} 
+For basic and frequently-used system calls like \texttt{open}, 
+Graphene allows rarely-used flags, such as \texttt{O\_TMPFILE} and \texttt{O\_NONBLOCK} 
+to pass down to the kernel, which reaches to risky lines in the kernel and leads to bugs. 
+By default, Docker and LXC do not wrap or filter system calls made by applications running in a container. 
+Thus, programs have access to basically all the system calls, and rarely used flags, such as \texttt{O\_TMPFILE},
+\texttt{O\_NONBLOCK}, and \texttt{O\_DSYNC}, which can reach risky lines of code in the kernel.
 
 To summarize, our analysis suggests that Lind triggers the fewest kernel bugs because
 it has better control over the portions of the OS kernel accessed by applications.
@@ -400,11 +412,8 @@ it has better control over the portions of the OS kernel accessed by application
 \textbf{Setup.}
 To understand the potential security risks if Lind's SafePOSIX re-creation
 has vulnerabilities, we conducted system call fuzzing with Trinity
-to obtain the reachable kernel trace in Linux kernel 3.14.1.
-
-\noindent
-\textbf{Results.}
-\lois{Aren't the following two sentences part of "set-up" is about what was done, not the results} To understand Lind's security properties, we need to see how much kernel is exposed to
+to obtain the reachable kernel trace in Linux kernel 3.14.1. 
+To understand Lind's security properties, we need to see how much kernel is exposed to
 SafePOSIX. Since our SafePOSIX runs inside the Repy sandbox kernel,
 fuzzing it suffices to determine the portion of the kernel reachable from
 inside the Repy sandbox.
@@ -423,6 +432,8 @@ inside the Repy sandbox.
 \label{table:trace-Repy}
 \end{table}
 
+\noindent
+\textbf{Results.}
 The results are shown in Table \ref{table:trace-Repy}.
 The trace of Repy is slightly larger (5.8\%) than that of Lind.
 This larger design does not allow attackers or bugs to
