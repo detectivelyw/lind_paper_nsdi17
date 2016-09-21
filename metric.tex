@@ -42,6 +42,7 @@ To trace the kernel, we used \texttt{gcov}~\cite{gcov}, a standard program profi
 tool in the GCC suite. The tool indicates which lines of kernel
 code are executed when an application runs.
 
+\noindent
 \textbf{Popular kernel paths.}
 To capture the popular kernel paths, we used two strategies concurrently.
 First, we attempted to capture the normal usage behavior of popular applications.
@@ -68,6 +69,7 @@ kernel code that defined our popular kernel paths.  We make this trace
 publicly available to other researchers \redact, so they may analyze or
 replicate our results.
 
+\noindent
 \textbf{Reachable kernel paths.}
 There are certain paths in the kernel, such as unloaded drivers, that are
 unreachable and unused.
@@ -86,6 +88,7 @@ with detailed kernel knowledge.
 %LTP combined to reach 44.6\% of the kernel, including all 12.4\% of the popular
 %paths.
 
+\noindent
 \textbf{Locating bugs.}
 Having identified the kernel paths used in popular applications,
 we then investigated how bugs are distributed among these paths. We collected a list of
@@ -168,6 +171,7 @@ popular paths have a much lower bug rate than unpopular ones.
 \label{fig:bug_density}
 \end{figure}
 
+\noindent
 {\bf Comparison with other security metrics.}
 Ozment, et al.~\cite{ozment2006milk} demonstrated that code that
 had been around longer in the Berkeley Software Distribution (BSD) \cite{BSD}
