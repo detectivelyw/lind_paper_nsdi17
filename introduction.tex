@@ -33,7 +33,7 @@ software must not contain any bugs that could allow the program to escape the
 machine's containment and interact directly with the host OS.
 Unfortunately, these issues are very common in OSVMs. Virtualbox reports more than 40 such
 vulnerabilities~\cite{Virtualbox-Vulnerabilities} and more than 100 bugs have
-been found in VMware Workstation~\cite{VMWare-Vulnerabilities}. 
+been found in VMware Workstation~\cite{VMWare-Vulnerabilities}.
 Given the large amount of complex code needed for such a system, it is understandable that flaws could occur,
 leaving tens of millions of user machines at risk~\cite{linux-0day}.
 
@@ -42,7 +42,7 @@ program can access a portion of the host OS's kernel that contains a
 zero-day flaw. This may occur even if the containment of the OSVM is
 working as designed.
 Many system calls made within an OSVM eventually
-result in system calls in the host OS (e.g., network I/O from the guest
+result in calls in the host OS (e.g., network I/O from the guest
 OSVM results in network I/O by the host OS kernel). If one of these paths in
 the OS kernel contains a zero-day security bug, the attacker
 may be able to trigger and exploit it.
@@ -90,8 +90,8 @@ associated with popular programs. %However, the popular kernel functionality is
 %not sufficient to implement all of the system call functionality needed by
 %applications.
 However, there are many system calls outside of the popular paths that need to
-be supported to run applications~\cite{tsai2016study}.  Our second
-observation in \lip is to re-create needed-but-risky OSVM functionality
+be supported to run applications~\cite{tsai2016study}.  Recognizing this,
+ \lip re-creates needed-but-risky OSVM functionality
 (e.g., POSIX) in a sandbox that only allows access to popular kernel paths.
 In this way a bug inside of the OSVM implementation does not result in a system compromise
 so long as the minimal sandbox remains uncompromised.
@@ -107,22 +107,16 @@ so long as the minimal sandbox remains uncompromised.
 To demonstrate the viability of \lip, we use it to implement a
 prototype library OS virtual machine that can offer enhanced security without sacrificing
 basic functionality. Dubbed Lind, it pairs two components -- Google's Native Client
-(NaCl) and Seattle's Repy. 
-\lois{Do we want to mention those two products. 
-I thought the functions were important but not the particular brand of component chosen, 
-since the system is supposed to be flexible} 
-\yiwen{I think this is Okay. Since we are talking about the actual implementation of Lind.} 
-NaCl serves as a computational module that isolates 
+(NaCl) and Seattle's Repy.
+NaCl serves as a computational module that isolates
 binaries, providing memory safety for legacy programs running in our OSVM.
 It also passes system calls invoked by the program to the operating system interface, called SafePOSIX.
-SafePOSIX re-creates the broader POSIX functionalities needed by applications.
-SafePOSIX does this while being contained within the Repy sandbox, which
-provides an API that only allows access to popular kernel paths.
-The small (8K LOC) sandbox kernel of Repy isolates flaws in SafePOSIX
+SafePOSIX re-creates the broader POSIX functionalities needed by applications, while being contained within the Repy sandbox. An API in the sandbox only allows access to popular kernel paths, while
+the small (8K LOC) sandbox kernel of Repy isolates flaws in SafePOSIX
 to prevent them from allowing direct access to the host OS kernel.
 
-To test Lind's effectiveness, we replicated 35 kernel bugs that were
-discovered in the Linux kernel version 3.14.1.  We attempted to trigger those
+To test Lind's effectiveness, we replicated 35 kernel bugs that had been
+discovered in Linux kernel version 3.14.1.  We attempted to trigger those
 bugs in three other virtualized environments,
 including Docker, LXC, and Graphene.
 Our results show that applications in Lind were substantially less likely to trigger
@@ -139,10 +133,9 @@ In summary, the main contributions of this paper are as follows:
 \item
 We propose a quantitative metric that evaluates security at the line-of-code
 level, and test its effectiveness against other proposed metrics,
-such as the age of code~\cite{ozment2006milk}, and
-the increased risk in driver code~\cite{PittSFIeld}.  We find that 
-choosing popular kernel paths is a much more effective metric for identifying lines of
-code that are unlikely to contain flaws.
+such as the age of code~\cite{ozment2006milk}, or
+the increased risk in driver code~\cite{PittSFIeld}.  We find that
+choosing popular kernel paths is a much more effective metric for identifying lines of code that are unlikely to contain flaws.
 %of the kernel that
 %After testing this metric against others, we find it effective in locating
 % bugs in the Linux kernel.
@@ -152,13 +145,13 @@ Based on the metric, we postulate a new approach for securing privileged code,
 and develop a new design scheme called \lip. It
 accesses only popular code paths
 through a very small trusted computer base.
-The need for complex functionality is addressed by re-creating riskier systems calls
+The need for complex functionality is addressed by re-creating riskier system calls
 in a memory-safe programming language within a secure sandbox.
 
 \item
-We build a prototype library OS virtual machine, Lind, using the \lip design, 
+We build a prototype library OS virtual machine, Lind, using the \lip design,
 and test its effectiveness against three other security systems. We find that
-Lind exposes 8-12x fewer risky (unpopular) kernel code paths containing bugs 
+Lind exposes 8-12x fewer risky (unpopular) kernel code paths containing bugs
 than prior production and academic systems.
 \end{itemize}
 
@@ -168,7 +161,7 @@ and precisely describes our threat model.
 %To understand which kernel paths a
 Earlier kernel protection metrics and how they performed
 against our newly proposed metric are discussed in Section \ref{sec.metric}.
-We will discuss handling bugs in the OSVM software in
+We discuss handling bugs in the OSVM software in
 Section~\ref{sec.design}, while focusing on design strategies for preventing exploitation of zero-day kernel
 bugs in the host OS.
 Section \ref{sec.design} also describes our \lip design scheme.
