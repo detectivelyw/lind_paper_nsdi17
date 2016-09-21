@@ -134,7 +134,7 @@ so long as the strictly needed functionality (e.g., persistent storage) is provi
 
 The application is provided more complex functionality due to the SafePOSIX re-creation
 (\ding{174} in Figure \ref{fig:design_safe_reimplementation}).
-The SafePOSIX re-creation has the needed complexity to build the more convenient higher level
+SafePOSIX has the needed complexity to build the more convenient higher-level
 abstractions using the basic functionality the sandbox kernel provides.
 The SafePOSIX re-creation is itself isolated within a library OS sandbox, which
 forces all system calls from through the sandbox kernel.

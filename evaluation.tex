@@ -10,8 +10,8 @@ virtualization systems -- Docker, LXC, and Graphene.
 We chose these three systems because they currently represent the most
 widely-used design models for securing the OS kernel.
 LXC is a well-known container designed specifically for the Linux kernel.
-Docker is a widely-used container in a number of systems, while
-Graphene is an open source library OS.
+Docker is a widely-used container that wraps an application in a self-contained filesystem, while
+Graphene is an open source library OS designed to run an application in a virtual machine environment..
 Lastly, we also tested Native Linux to serve as a
 baseline for comparison.
 %
@@ -29,7 +29,7 @@ vulnerable in different virtualization systems?}
 this vulnerability have?}
 (Section~{{\ref{Reachable-Kernel-Trace-Analysis-for-Repy-Sandbox}})
 
-\textit{In the Lind prototype, what is the expected performance overhead in
+\textit{In the Lind prototype, what would be the expected performance overhead in
 real-world applications?}
 (Section~{{\ref{Performance-Evaluation}})
 
@@ -57,8 +57,8 @@ actually has enough control to exploit the bug.
 However, this overestimate should apply equally to all of the systems we tested, which means it is still a useful method of comparison.
 
 Next, we sought out proof-of-concept code that could trigger each bug.
-We were able to obtain or create code that triggered nine out of the 69 bugs \cite{Exploit-Database}.
-For the remaining, we used the Trinity system call fuzzer
+We were able to obtain or create code to trigger nine out of the 69 bugs \cite{Exploit-Database}.
+For the rest, we used the Trinity system call fuzzer
 \cite{Trinity} on Linux 3.14.1 (referred to as ``Native'' Linux in Table~\ref{table:trigger_vulnerabilities}).
 By comparing the code reached during fuzzing with the lines of code affected by security patches,
 we were able to identify an additional 26 bugs that could be triggered.
@@ -88,19 +88,19 @@ Drawbridge \cite{Drawbridge-11} ABI, which has 43 functions. Those ABI functions
 are provided by the Platform Adaptation Layer (PAL), implemented using 50 calls
 to the kernel. It turns out that 8 vulnerabilities in our test were triggered by PAL's
 50 system calls. On the contrary, Lind only relies on 33 system calls, which significantly reduces
-risks and avoids 7 out of the 8 bugs. 
+risks and avoids 7 out of the 8 bugs.
 
-Graphene supports many complex and risky system calls, such as \texttt{execve}, \texttt{msgsnd}, and \texttt{futex}, 
-that reached the risky (unpopular) portion of the kernel and eventually led to kernel bugs. 
-In addition, for many basic and frequently-used system calls like \texttt{open} and \texttt{read}, 
-Graphene allows rarely-used flags and arguments to be passed down to the kernel, which triggered bugs in 
-the unpopular paths. 
-In Lind, all system calls only allow a restricted set of simple and frequently-used flags and arguments. 
-One example from our test result is that Graphene allows \texttt{O\_TMPFILE} flag to pass down with 
-\texttt{path\_openat()} system call. This reached risky lines of code inside \texttt{fs/namei.c} in the kernel, 
-and eventually triggered bug CVE-2015-5706. 
-The same bug was triggered in the same way inside Docker and LXC, but was successfully prevented by Lind, 
-due to the strict control on flags and arguments. 
+Graphene supports many complex and risky system calls, such as \texttt{execve}, \texttt{msgsnd}, and \texttt{futex},
+that reached the risky (unpopular) portion of the kernel and eventually led to kernel bugs.
+In addition, for many basic and frequently-used system calls like \texttt{open} and \texttt{read},
+Graphene allows rarely-used flags and arguments to be passed down to the kernel, which triggered bugs in
+the unpopular paths.
+In Lind, all system calls only allow a restricted set of simple and frequently-used flags and arguments.
+One example from our test result is that Graphene allows \texttt{O\_TMPFILE} flag to pass down with
+\texttt{path\_openat()} system call. This reached risky lines of code inside \texttt{fs/namei.c} in the kernel,
+and eventually triggered bug CVE-2015-5706.
+The same bug was triggered in the same way inside Docker and LXC, but was successfully prevented by Lind,
+due to its strict control on flags and arguments.
 In fact, the design of Graphene requires extensive interaction
 with the host kernel and, hence, has many risks. The developers of Graphene manually conducted
 an analysis of 291 Linux vulnerabilities from 2011 to 2013, and found out that Graphene's design can not prevent 144 of those vulnerabilities.
@@ -374,12 +374,12 @@ kernel. More importantly, all the kernel code it did access was in the
 popular kernel paths that contain fewer bugs (Section~{\ref{Verification-of-Hypothesis}}).
 A large portion of the kernel paths accessed by Lind lie in
 \texttt{fs/} to perform file system operations.
-To restrict file system calls to popular paths, Lind only allows basic calls,
+To restrict file system calls to popular paths, Lind allows only basic calls,
 like \texttt{open()}, \texttt{close()}, \texttt{read()}, \texttt{write()}, \texttt{mkdir()},
-\texttt{rmdir()}, and commonly used flags like \texttt{O\_CREAT}, \texttt{O\_EXCL},
+\texttt{rmdir()}, and permits only commonly-used flags like \texttt{O\_CREAT}, \texttt{O\_EXCL},
  \texttt{O\_APPEND}, \texttt{O\_TRUNC},
-\texttt{O\_RDONLY}, \texttt{O\_WRONLY}, and \texttt{O\_RDWR} are
-permitted for \texttt{open()}.
+\texttt{O\_RDONLY}, \texttt{O\_WRONLY}, and \texttt{O\_RDWR}
+for \texttt{open()}.
 
 The other virtualization systems all accessed a substantial number of code
 paths in the kernel, and they all accessed a larger section from the unpopular
@@ -390,13 +390,13 @@ system call API supports multiple processes via \texttt{fork()} and signals,
 and therefore accesses many risky lines of code. \brendan{Is there a better
 example of complex kernel functionality that Graphene uses? It would be better
 if it were something that Lind also supports.}
-\yiwen{I tried to provide a better example here.} 
-For basic and frequently-used system calls like \texttt{open}, 
-Graphene allows rarely-used flags, such as \texttt{O\_TMPFILE} and \texttt{O\_NONBLOCK} 
-to pass down to the kernel, which reaches to risky lines in the kernel and leads to bugs. 
-By default, Docker and LXC do not wrap or filter system calls made by applications running in a container. 
+\yiwen{I tried to provide a better example here.}
+For basic and frequently-used system calls like \texttt{open},
+Graphene allows rarely-used flags, such as \texttt{O\_TMPFILE} and \texttt{O\_NONBLOCK}
+to pass down to the kernel, thus reaching risky lines in the kernel that could lead to bugs.
+By default, Docker and LXC do not wrap or filter system calls made by applications running in a container.
 Thus, programs have access to basically all the system calls, and rarely used flags, such as \texttt{O\_TMPFILE},
-\texttt{O\_NONBLOCK}, and \texttt{O\_DSYNC}, which can reach risky lines of code in the kernel.
+\texttt{O\_NONBLOCK}, and \texttt{O\_DSYNC}. Again, this mean they can reach risky lines of code in the kernel.
 
 To summarize, our analysis suggests that Lind triggers the fewest kernel bugs because
 it has better control over the portions of the OS kernel accessed by applications.
@@ -412,11 +412,11 @@ it has better control over the portions of the OS kernel accessed by application
 \textbf{Setup.}
 To understand the potential security risks if Lind's SafePOSIX re-creation
 has vulnerabilities, we conducted system call fuzzing with Trinity
-to obtain the reachable kernel trace in Linux kernel 3.14.1. 
-To understand Lind's security properties, we need to see how much kernel is exposed to
+to obtain the reachable kernel trace in Linux kernel 3.14.1.
+The goal is to see how much kernel is exposed to
 SafePOSIX. Since our SafePOSIX runs inside the Repy sandbox kernel,
 fuzzing it suffices to determine the portion of the kernel reachable from
-inside the Repy sandbox.
+inside the sandbox.
 
 \begin{table}
 \centering
@@ -444,15 +444,14 @@ system call interface.
 For example, in Repy,
 \texttt{sendmessage()} and \texttt{openconnection()}
 functions could reach out to more lines of code when fuzzed. However, the kernel
-trace of Repy still lies completely within the popular kernel paths.
-Since the popular paths contain fewer kernel bugs, the Repy sandbox kernel
+trace of Repy still lies completely within the popular paths that
+contain fewer kernel bugs. Thus, the Repy sandbox kernel
 has only a very slim chance of triggering OS kernel bugs.
 
 Since it is the direct point of contact with the OS kernel, in theory, the Repy
  sandbox kernel could be a weakness in the overall security coverage provided by Lind.
-However, the results above show that, even if it has a
-bug or failure, it should not substantially increase the risk of triggering
-kernel bugs.
+Nevertheless, the results above show that, even if it has a
+bug or failure, the Repy kernel should not substantially increase the risk of triggering bugs.
 
 \subsection{Performance Overhead}
 \label{Performance-Evaluation}
@@ -520,8 +519,8 @@ program. We expect other CPU bound processes to behave similarly.
 The other five applications experienced slowdowns roughly ranging from 3x to 6x.
 All of them require repeated calls into SafePOSIX, and this additional SafePOSIX
 computation produced the additional overhead.
-The fact that the total execution time was limited
-to the magnitude of 10,000 ms ensures that the
+Since total execution time was limited
+to the magnitude of 10,000 ms, the
 user experience is still reasonably efficient.
 
 \begin{table}
@@ -562,23 +561,23 @@ benchmarks focus on cryptographic operations,
 which are CPU intensive, but also make system calls like \texttt{getpid}, and reads to
 \texttt{/dev/urandom}.
 The digest operations time the access of a map of message digests.
-The AES operations time includes encryptions of several sizes and creation of
+The AES operations time includes encryptions of several sizes and the creation of
 message digests. Cell processing executes full packet encryption and decryption. In our
 test, Lind slowed down these operations by 2.5x to 5x. We believe these
 slowdowns are due to the increased code size produced by NaCl,
 %\cappos{I'm not sure why this would be.  Does NaCl show this too?}
 and the increased overhead from Lind's SafePOSIX system call interface.
 
-Results for the Apache benchmarking tool \texttt{ab} is presented in Table \ref{table:performance_apache}.
+Results for the Apache benchmarking tool \texttt{ab} are presented in Table \ref{table:performance_apache}.
 In the set of experiments, Lind produced performance slowdowns around 2.7x.
 Most of the overhead was incurred due to system call operations inside the
 SafePOSIX re-creation.
 
 As shown above, Lind generally incurs some performance overhead.
 However, performance slowdown is common in virtualization systems.
-For example, Graphene \cite{Graphene-14} also shows an overhead ranged from
-1.4x to 2x when running applications such as Apache web server and Unixbench suite \cite{UnixBench}.
-Lind shares the same magnitude of slowdown with Graphene in many cases.
+For example, Graphene \cite{Graphene-14} also shows an overhead ranging from
+1.4x to 2x when running applications such as the Apache web server and Unixbench suite \cite{UnixBench}.
+In many cases, Lind shares the same magnitude of slowdown with Graphene.
 Since an attack on the kernel can have devastating
 consequences, %at this initial stage,
 a tradeoff between security and performance could be justified.
