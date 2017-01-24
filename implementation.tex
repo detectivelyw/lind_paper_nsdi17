@@ -1,16 +1,15 @@
 \section{Implementation of Lind}
 \label{sec.implementation}
 
-To test our \lip design, we used it to implement a secure library OS virtual machine
-called Lind\footnote{\scriptsize Lind is an Old English word for a lightweight, but still strong shield
+To test our \lip design, we used it to implement a secure virtual machine
+called Lind\footnote{\scriptsize Lind is an old English word for a lightweight, but still strong shield
 constructed from two layers of linden wood.}.  Lind is divided into a
 \emph{computational module} that enforces software fault isolation (SFI) and a
-library OS that safely reimplements OS functionality needed by user
+\emph{SafePOSIX module} that safely re-creates OS functionality needed by user
 applications.  We use a slightly modified version of Native Client
-(NaCl)~\cite{NaCl-09} for the computational module; the library OS is
-implemented using Restricted Python (Repy)~\cite{Repy-10}. Finally, to support
-complex user applications without exposing potentially unsafe kernel paths, we
-provide a safe POSIX implementation, which is built on top of Repy.
+(NaCl)~\cite{NaCl-09} for the computational module; the SafePOSIX is
+implemented using Restricted Python (Repy)~\cite{Repy-10}, to support
+complex user applications without exposing potentially risky kernel paths.
 
 In this section we provide a brief description of these components and how they
 were integrated into Lind, followed by an example of how the system works.
@@ -26,7 +25,7 @@ or executing arbitrary instructions.
 Instead, the application will call into a small, privileged
 part of NaCl that forwards system calls. In NaCl's original implementation,
 these calls would usually be forwarded to the host OS kernel. In Lind, we
-modified NaCl to instead forward these calls to our library OS, SafePOSIX
+modified NaCl to instead forward these calls to our SafePOSIX re-creation 
 (described in detail below).
 
 \paragraph{Seattle's Repy.}
@@ -36,7 +35,8 @@ still supporting existing applications, we need two things. First, we need a
 restricted sandbox that only allows access to commonly-used kernel paths. We
 used Seattle's Repy~\cite{Repy-10} sandbox to perform this task. Second, we
 have to provide complex system functions to user programs,
-for which we implemented the widely accepted standard POSIX interface on top of Repy.
+for which we implemented the widely accepted standard POSIX interface on top of Repy, 
+which we call SafePOSIX. 
 
 Because the sandbox kernel is the only code that will be in direct contact with host
 system calls, it should be small (to make it easy to audit), while providing
@@ -76,7 +76,7 @@ virtualnamespace.evaluate, getresources, and getlasterror.}  \\ \hline
 The full kernel interface is extremely rich and hard to protect.
 The dual sandbox \lip design used to build Lind provides enhanced
 safety protection through both isolation and a POSIX interface (SafePOSIX) that
-reimplements risky system calls to
+re-creates risky system calls to
 provide full-featured API for legacy applications, with minimal impact on the kernel.
 
 In Lind, a system call issued from user code is
