@@ -7,12 +7,12 @@ Currently, there are two basic approaches.
 One, known as system call interposition (SCI), checks and passes system calls
 through to the underlying kernel. The other, which we call ``functionality
 re-creation," requires rebuilding system functionality with new code. In this
-section, we show that both methods are limited in their ability to
+section, we show that both existing methods are limited in their ability to
 prevent attacks in the kernel.
 Using our metric described in Section~\ref{sec.metric},
 we then propose a new design scheme named \lip, which accesses only popular
-code paths through a very small trusted computer base, and utilizes
-functionality re-creation within a secure environment for complex implementations.
+code paths through a very small trusted computing base, and utilizes
+functionality re-creation within a secure sandboxed environment for complex implementations.
 
 \subsection{System Call Interposition (SCI)}
 SCI systems~\cite{Janus0:96, Janus:99} filter system calls to mediate requests
@@ -86,7 +86,8 @@ basic API functions to the OS library.
 
 Functionality re-creation provides a more realistic solution to building
 virtualization systems than earlier efforts.
-However, functionality recreation has two pitfalls: first, if the recreated functionality resides in the TCB of the virtualization system, then vulnerabilities there can expose the host OS to attack as well.
+However, functionality re-creation has two pitfalls: 
+first, if the re-created functionality resides in the TCB of the virtualization system, then vulnerabilities there can expose the host OS to attack as well.
 For example, hundreds of vulnerabilities have been
 reported in existing virtualization systems such as QEMU and VMWare over the past ten years~\cite{NVD}.
 In addition, the
@@ -99,7 +100,10 @@ API allowed local users to
 gain privilege to execute arbitrary code in the host
 OS~\cite{CVE-2008-2100}.
 
-Second, functionality recreation may assume that the underlying host kernel is correct. As we have seen, this assumption is often incorrect; host kernels may have bugs in their implementation that leave them vulnerable to attack. Thus, to provide the greatest assurance that the host kernel will not be exposed to malicious user programs, a functional recreation should try to avoid kernel APIs that are likely to contain flaws. We discuss this approach in detail next.
+Second, functionality re-creation may assume that the underlying host kernel is correct. 
+As we have seen, this assumption is often incorrect; host kernels may have bugs in their implementation that leave them vulnerable to attack. 
+Thus, to provide the greatest assurance that the host kernel will not be exposed to malicious user programs, 
+a functionality re-creation should try to avoid kernel APIs that are likely to contain flaws. We discuss this approach in detail next.
 
 \subsection{Lock-in-Pop: Staying on the Beaten Path}
 
@@ -116,7 +120,7 @@ design \lip.
 \begin{figure}%[h]
 \centering
 \includegraphics[width=1.0\columnwidth]{diagram/Virtualization_Design_Model_01.png}
-\caption{\small \lip system ensures safe execution of untrusted user code
+\caption{\small \lip design ensures safe execution of untrusted user code
 despite existing potential zero-day bugs in the OS kernel.}
 \label{fig:design_safe_reimplementation}
 \end{figure}
