@@ -76,7 +76,7 @@ to flaws in two versions of the Linux kernel (version 3.13.0 and version 3.14.1)
 found that only about 3\% of the bugs were present in popular code paths,
 despite these paths accounting for about one third of the total reachable
 kernel code.
-Therefore, OSVMs that only use these kernel paths will
+Therefore, virtual machines that only use these kernel paths will
 greatly increase resilience to zero-day bugs in the host OS kernel.
 %When we ran the same study on the same Linux kernel versions
 %using two other metrics
@@ -91,7 +91,7 @@ associated with popular programs. %However, the popular kernel functionality is
 %applications.
 However, there are many system calls outside of the popular paths that need to
 be supported to run applications~\cite{tsai2016study}.  Recognizing this,
- \lip re-creates needed-but-risky OSVM functionality
+ \lip re-creates needed-but-risky OS functionality
 (e.g., POSIX) in a sandbox that only allows access to popular kernel paths.
 In this way a bug inside of the OSVM implementation does not result in a system compromise
 so long as the minimal sandbox remains uncompromised.
@@ -105,13 +105,14 @@ so long as the minimal sandbox remains uncompromised.
 %a memory-safe programming language sandbox.
 
 To demonstrate the viability of \lip, we use it to implement a
-prototype library OS virtual machine that can offer enhanced security without sacrificing
+prototype virtual machine that can offer enhanced security without sacrificing
 basic functionality. Dubbed Lind, it pairs two components -- Google's Native Client
 (NaCl) and Seattle's Repy.
 NaCl serves as a computational module that isolates
 binaries, providing memory safety for legacy programs running in our OSVM.
 It also passes system calls invoked by the program to the operating system interface, called SafePOSIX.
-SafePOSIX re-creates the broader POSIX functionalities needed by applications, while being contained within the Repy sandbox. An API in the sandbox only allows access to popular kernel paths, while
+SafePOSIX re-creates the broader POSIX functionalities needed by applications, while being contained within the Repy sandbox. 
+An API in the sandbox only allows access to popular kernel paths, while
 the small (8K LOC) sandbox kernel of Repy isolates flaws in SafePOSIX
 to prevent them from allowing direct access to the host OS kernel.
 
@@ -144,12 +145,12 @@ choosing popular kernel paths is a much more effective metric for identifying li
 Based on the metric, we postulate a new approach for securing privileged code,
 and develop a new design scheme called \lip. It
 accesses only popular code paths
-through a very small trusted computer base.
+through a very small trusted computing base.
 The need for complex functionality is addressed by re-creating riskier system calls
 in a memory-safe programming language within a secure sandbox.
 
 \item
-We build a prototype library OS virtual machine, Lind, using the \lip design,
+We build a prototype virtual machine, Lind, using the \lip design,
 and test its effectiveness against three other security systems. We find that
 Lind exposes 8-12x fewer risky (unpopular) kernel code paths containing bugs
 than prior production and academic systems.
@@ -165,7 +166,7 @@ We discuss handling bugs in the OSVM software in
 Section~\ref{sec.design}, while focusing on design strategies for preventing exploitation of zero-day kernel
 bugs in the host OS.
 Section \ref{sec.design} also describes our \lip design scheme.
-In Section \ref{sec.implementation} we discuss the construction of the Lind
+In Section \ref{sec.implementation} we discuss the construction of our Lind
 prototype, while Section \ref{sec.evaluation} provides a quantitative
 security analysis of Lind compared to other virtualization systems.
 Section \ref{sec.limitation} outlines limitations of our study. 
