@@ -65,7 +65,8 @@ may be able to trigger and exploit it.
 %quantitative design solution.
 
 With this paper, we move one step closer to designing secure OSVM systems that are
-resilient to zero-day flaws.
+resilient to zero-day flaws. 
+We discovered that security bugs in the Linux kernel have strong correlation with popular paths. 
 We start with the proposition that kernel code found in popular paths, associated with frequently-used programs,
 has less potential risk of bugs than code in less-used parts of the kernel.
 Our intuition behind this proposition is that bugs in the popular paths are
@@ -75,9 +76,10 @@ We performed a quantitative analysis of resilience
 to flaws in two versions of the Linux kernel (version 3.13.0 and version 3.14.1), and
 found that only about 3\% of the bugs were present in popular code paths,
 despite these paths accounting for about one third of the total reachable
-kernel code.
-Therefore, virtual machines that only use these kernel paths will
-greatly increase resilience to zero-day bugs in the host OS kernel.
+kernel code. 
+This key information inspired the idea that 
+if we could design virtual machines that only use popular kernel paths, 
+it would greatly increase resilience to zero-day bugs in the host OS kernel. 
 %When we ran the same study on the same Linux kernel versions
 %using two other metrics
 %(Chou \cite{PittSFIeld} and Ozment \cite{ozment2006milk}),
@@ -93,7 +95,7 @@ However, there are many system calls outside of the popular paths that need to
 be supported to run applications~\cite{tsai2016study}.  Recognizing this,
  \lip re-creates needed-but-risky OS functionality
 (e.g., POSIX) in a sandbox that only allows access to popular kernel paths.
-In this way a bug inside of the OSVM implementation does not result in a system compromise
+In this way even a bug inside of the OSVM implementation will not result in a system compromise
 so long as the minimal sandbox remains uncompromised.
 
 %This is sufficient to
@@ -118,7 +120,7 @@ to prevent them from allowing direct access to the host OS kernel.
 
 To test Lind's effectiveness, we replicated 35 kernel bugs that had been
 discovered in Linux kernel version 3.14.1.  We attempted to trigger those
-bugs in three other virtualized environments,
+bugs in Lind and three other virtualized environments,
 including Docker, LXC, and Graphene.
 Our results show that applications in Lind were substantially less likely to trigger
 kernel bugs.
@@ -132,14 +134,13 @@ In summary, the main contributions of this paper are as follows:
 %fewer bugs.  \cappos{I'm not sure how this differs from 3...}
 
 \item
-We propose a quantitative metric that evaluates security at the line-of-code
-level, and test its effectiveness against other proposed metrics,
+We propose a quantitative metric that evaluates security at the line-of-code level. 
+We discover that security bugs in the Linux kernel have strong correlation with popular paths. 
+We verified our hypothesis that popular paths have significantly fewer security bugs than other paths. 
+Compared against other proposed metrics, 
 such as the age of code~\cite{ozment2006milk}, or
-the increased risk in driver code~\cite{PittSFIeld}.  We find that
-choosing popular kernel paths is a much more effective metric for identifying lines of code that are unlikely to contain flaws.
-%of the kernel that
-%After testing this metric against others, we find it effective in locating
-% bugs in the Linux kernel.
+the increased risk in driver code~\cite{PittSFIeld}. 
+We find that choosing popular kernel paths is a much more effective metric for identifying lines of code that are unlikely to contain security flaws.
 
 \item
 Based on the metric, we postulate a new approach for securing privileged code,
