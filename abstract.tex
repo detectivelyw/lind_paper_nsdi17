@@ -8,13 +8,13 @@ However, it is often possible to trigger zero-day flaws
 in the host Operating System (OS) from inside of such virtualized systems.
 %
 In this paper, we offer a new insight about where security bugs lie. By observing that the OS kernel paths accessed
-by popular applications in everyday use contain fewer security bugs than less-used paths, 
+by popular applications in everyday use contain significantly fewer security bugs than less-used paths, 
 we devise a design that allows applications to run more securely in VMs on top of a vulnerable host OS.
 Furthermore, We
 leverage this observation to devise the \lip design, which
 \textbf{\textit{locks}} an application, and the POSIX implementation that services it, into
 accessing only the well-used \textbf{\textit{popular}} portion of the kernel.  Using the \lip model, we
-implement a virtual machine called Lind.
+implement a prototype virtual machine called Lind.
 %
 We compare Lind and three other virtualized systems that were
 available at the release of Linux kernel version 3.14.1, and evaluate
