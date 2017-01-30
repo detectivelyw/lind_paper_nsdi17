@@ -127,9 +127,15 @@ Tsai, et al. developed Graphene \cite{Graphene-14}, a library OS that
 executes both single and
 multi-process applications with low performance overheads.
 
-While typical library OSes trust the underlying host kernels to perform many system functions,
-Lind re-creates complex OS functions through memory-safe Repy
-code, relying on only a limited set of system functions from the Repy
-sandbox. Furthermore, Drawbridge, Bascule or Haven
-do not have a sandbox environment to properly contain
-buggy or malicious behavior, while Lind can offer this more secure environment.
+The key distinction between Lind and other existing library OSes is that the design of Lind 
+is deliberately trying to restrict access to the host kernel to only popular paths, which is possible 
+because of our new security metric proposed. While existing library OSes trust the underlying host kernel to perform many system functions, 
+they lack the critical information about which part of the kernel can be safely accessed, without which, the exploitation of kernel vulnerabilities 
+cannot be prevented effectively. 
+
+%While typical library OSes trust the underlying host kernels to perform many system functions,
+%Lind re-creates complex OS functions through memory-safe Repy
+%code, relying on only a limited set of system functions from the Repy
+%sandbox. Furthermore, Drawbridge, Bascule or Haven
+%do not have a sandbox environment to properly contain
+%buggy or malicious behavior, while Lind can offer this more secure environment.
