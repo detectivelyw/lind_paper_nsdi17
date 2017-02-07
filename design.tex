@@ -15,9 +15,9 @@
 %functionality re-creation within a secure sandboxed environment for complex implementations.
 
 In the previous section we have demonstrated that ``popular paths'' correlates statistically-significantly with security. 
-Next, we want to demonstrate that our ``popular paths'' metric is useful in devising a feasible design solution to build 
+Next, we want to demonstrate that our ``popular paths'' metric is practically useful in devising a feasible design solution to build 
 secure virtualization systems. We first briefly discuss the limitations faced by existing methods, due to the lack of a good 
-security metric. We then propose our new design scheme named \lip, which accesses only popular code paths. 
+security metric. We then discuss our new design scheme named \lip, which comes out of our metric, that accesses only popular code paths. 
 
 \subsection{Previous Attempts and Their Limitations}
 
@@ -117,10 +117,11 @@ We discuss this approach in detail next.
 
 \subsection{Lock-in-Pop: Staying on the Beaten Path}
 
-As discussed above, a weakness of the previous approaches is the inevitable contact
-between the privileged kernel code and an untrusted application.
-By leveraging our key metric
-that ``popular kernel paths contain fewer bugs," we propose a design
+%As discussed above, a weakness of the previous approaches is the inevitable contact
+%between the privileged kernel code and an untrusted application.
+Recall that we want to show the ``popular paths'' metric is practically useful. 
+We do so by leveraging this key metric
+that ``popular kernel paths contain fewer bugs" to devise a design
 in which all code, including the complex part
 of the operating system interface, access only
 popular kernel paths through a small TCB. As it ``locks" all functionality
@@ -168,7 +169,8 @@ are small and/or well tested, this leads to a lower risk of compromise.
 
 \subsection{Implementation of Lock-in-Pop}
 
-To test our \lip design, we used it to implement a prototype virtual machine
+To test the practicality of the ``popular paths'' metric and our \lip design, 
+we implement a prototype virtual machine
 called Lind\footnote{\scriptsize Lind is an old English word for a lightweight, but still strong shield
 constructed from two layers of linden wood.}. The purpose of building the Lind prototype is to demonstrate that 
 our ``popular paths'' metric is practical. And it is indeed possible for developers to build secure systems using 
