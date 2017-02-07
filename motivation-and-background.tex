@@ -6,17 +6,22 @@ this study does not evaluate a few existing design schemes.
 
 \noindent
 \textbf{Goals.}
-Our goal is to design and build a secure virtualization system that allows
-untrusted programs to run on an unpatched and vulnerable host OS (Linux OS in
-this study), without triggering vulnerabilities that attackers could exploit.
+Ultimately, our goal is to help designers to
+create systems that allow untrusted programs to 
+run on an unpatched and vulnerable host OSes 
+ without triggering vulnerabilities that attackers could exploit.
 Developing effective defenses for the host OS kernel is essential as kernel code
 can expose privileged access to attackers that could lead to a system take-over.
 
-To combat the threat from zero-day vulnerabilities, untrusted programs are often executed in a
-secure virtualization system, such as a guest OSVM, a system call
-interposition module, or a library OS system. Our intent is to
-build such a system capable of protecting a vulnerable underlying host OS,
-while running untrusted user programs.
+Our hypothesis was that OS kernel code paths that are frequently used receive
+more
+attention and therefore are less likely to contain security vunlnerabilities.
+Our approach, then, was to test this hypothesis and, if validated, determine
+if this observation could be exploited by designers to build 
+virtualization systems, such as guest OSVMs, system call interposition modules
+or library OSes that force untrusted applications to keep on commonly-used kernel
+code paths and thereby improve security.
+
 
 
 \noindent
