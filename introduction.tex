@@ -87,7 +87,8 @@ it would greatly increase resilience to zero-day bugs in the host OS kernel.
 %(Chou \cite{PittSFIeld} and Ozment \cite{ozment2006milk}),
 %we found them less effective at predicting the location of zero-day bugs.
 
-Guided by this knowledge, we propose a new design scheme for a secure virtual machine that
+We demonstrate that the ``popular paths'' metric is useful for building secure virtual machines. 
+We use the metric to come up with a new design scheme that
 accesses only popular code lines through a very small trusted computing base.
 We name it \lip, as it locks kernel access to only code
 associated with popular programs. %However, the popular kernel functionality is
@@ -108,7 +109,7 @@ so long as the minimal sandbox remains uncompromised.
 %For complex functionalities,  \emph{Lock-in-Pop} re-creates system calls in
 %a memory-safe programming language sandbox.
 
-To demonstrate the viability of \lip, we use it to implement a
+To show the practicality of the ``popular paths'' metric, we use it to implement a
 prototype virtual machine that can offer enhanced security without sacrificing
 basic functionality. Dubbed Lind, it pairs two components -- Google's Native Client
 (NaCl) \cite{NaCl-09} and Seattle's Repy \cite{Repy-10}.
@@ -120,7 +121,8 @@ An API in the sandbox only allows access to popular kernel paths, while
 the small (8K LOC) sandbox kernel of Repy isolates flaws in SafePOSIX
 to prevent them from allowing direct access to the host OS kernel.
 
-To test Lind's effectiveness, we replicated 35 kernel bugs that had been
+To test the effectiveness of our ``popular paths'' metric, 
+we replicated 35 kernel bugs that had been
 discovered in Linux kernel version 3.14.1.  We attempted to trigger those
 bugs in Lind and three other virtualized environments,
 including Docker, LXC, and Graphene.
@@ -154,7 +156,7 @@ The need for complex functionality is addressed by re-creating riskier system ca
 in a memory-safe programming language within a secure sandbox.
 
 \item
-We build a prototype virtual machine, Lind, using the \lip design,
+To demonstrate the practicality of the ``popular paths'' metric, we build a prototype virtual machine, Lind, using the \lip design,
 and test its effectiveness against three other virtual machines. We find that
 Lind exposes 8-12x fewer zero-day kernel bugs. 
 \end{itemize}
