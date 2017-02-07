@@ -64,7 +64,9 @@ may be able to trigger and exploit it.
 % the reduction of specific threats, but not to a reproducible, broadly applicable,
 %quantitative design solution.
 
-With this paper, we move one step closer to designing secure OSVM systems that are
+%With this paper, we move one step closer to designing secure OSVM systems that are
+%resilient to zero-day flaws. 
+In this paper, we propose a new security metric that helps devise designs for secure OSVM systems that are
 resilient to zero-day flaws. 
 We discovered that security bugs in the Linux kernel have strong correlation with popular paths. 
 We start with the proposition that kernel code found in popular paths, associated with frequently-used programs,
@@ -144,7 +146,7 @@ We verified our hypothesis that popular paths have significantly fewer security 
 %We find that choosing popular kernel paths is a much more effective metric for identifying lines of code that are unlikely to contain security flaws.
 
 \item
-Based on the metric, we postulate a new approach for securing privileged code,
+Based on the ``popular paths'' metric, we postulate a new approach for securing privileged code,
 and develop a new design scheme called \lip. It
 accesses only popular code paths
 through a very small trusted computing base.
