@@ -129,9 +129,12 @@ multi-process applications with low performance overheads.
 
 The key distinction between Lind and other existing library OSes is that the design of Lind 
 is deliberately trying to restrict access to the host kernel to only popular paths, which is possible 
-because of our new security metric proposed. While existing library OSes trust the underlying host kernel to perform many system functions, 
-they lack the critical information about which part of the kernel can be safely accessed, without which, the exploitation of kernel vulnerabilities 
-cannot be prevented effectively. 
+because of our new security metric proposed. Existing library OSes trust the underlying host kernel to perform many functions, 
+while filtering certain system calls. 
+%they lack the critical information about which part of the kernel can be safely accessed, without which, the exploitation of kernel vulnerabilities 
+%cannot be prevented effectively. 
+Our work and previous library OSes are orthogonal, but we provide useful insights with our ``popular paths'' metric. 
+
 
 %While typical library OSes trust the underlying host kernels to perform many system functions,
 %Lind re-creates complex OS functions through memory-safe Repy
