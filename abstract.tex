@@ -31,12 +31,10 @@ in the host Operating System (OS) from inside of such virtualized systems.
 %
 In this paper, we propose a new security metric showing strong correlation between ``popular paths'' 
 and kernel vulnerabilities. We verified that the OS kernel paths accessed 
-by popular applications in everyday use contain significantly fewer security bugs than less-used paths, 
-Furthermore, We leverage our ``popular paths'' metric to devise the \lip design, which
-\textbf{\textit{locks}} an application, and the POSIX implementation that services it, into
-accessing only the well-used \textbf{\textit{popular}} portion of the kernel.  Using the \lip model, we
-implement a prototype virtual machine called Lind.
-%
-We compare Lind and three other virtualized systems. 
-Our results show that Lind can prevent the triggering of zero-day kernel bugs significantly better
-than an existing library OS (Graphene) and containers such as Docker and LXC. 
+by popular applications in everyday use contain significantly fewer security bugs than less-used paths.  We then demonstrate that this observation is
+practically useful by building a prototype system which \textit{locks} an
+application into only using popular OS kernel paths.  By doing so, we
+demonstrate that
+we can prevent the triggering of zero-day kernel bugs
+significantly better than three other competing approaches, and argue that
+this is a practical approach to  secure system design.
