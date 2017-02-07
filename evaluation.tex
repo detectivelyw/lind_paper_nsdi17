@@ -455,7 +455,7 @@ bug or failure, the Repy kernel should not substantially increase the risk of tr
 \subsection{Performance Overhead}
 \label{Performance-Evaluation}
 
-The purpose of our performance evaluation is to show that the \lip design based on our 
+The purpose of our performance evaluation is to show that the 
 ``popular paths'' metric is practical in building real-world systems. Overhead is expected. 
 We have not optimized our Lind prototype to try to improve performance, since that is not 
 our main purpose of building the prototype. 
@@ -577,20 +577,21 @@ In the set of experiments, Lind produced performance slowdowns around 2.7x.
 Most of the overhead was incurred due to system call operations inside the
 SafePOSIX re-creation.
 
-As shown above, Lind generally incurs some performance overhead.
-However, performance slowdown is common in virtualization systems.
+Performance overhead in Lind is reasonable, considering that 
+we did not specifically optimize any part of the code to improve speed. 
+It should also be noted that performance slowdown is common in virtualization systems.
 For example, Graphene \cite{Graphene-14} also shows an overhead ranging from
 1.4x to 2x when running applications such as the Apache web server and Unixbench suite \cite{UnixBench}.
 In many cases, Lind shares the same magnitude of slowdown with Graphene.
 Since an attack on the kernel can have devastating
 consequences, %at this initial stage,
 a tradeoff between security and performance could be justified.
-The fact that Lind has shown an ability to run
+%The fact that Lind has shown an ability to run
 %\cappos{4 applications isn't many...
 %Do we have Apache numbers or something else to quantify?}
 %\yiwen{I am looking at more apps and libs that we can run and test in Lind.}
-legacy applications
-suggests that it is worth continuing research to optimize these systems.
+%legacy applications
+%suggests that it is worth continuing research to optimize these systems.
 
 \begin{table}
 \centering
