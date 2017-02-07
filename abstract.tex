@@ -1,25 +1,42 @@
 \subsection*{Abstract}
 
-Virtual machines (VMs) are widely used in practice, in part for their ability to
-isolate potentially untrusted code from the rest of a system.
-Recently, library OSes and containers have also presented promising security options.
+%Virtual machines (VMs) are widely used in practice, in part for their ability to
+%isolate potentially untrusted code from the rest of a system.
+%Recently, library OSes and containers have also presented promising security options.
 %
+%However, it is often possible to trigger zero-day flaws
+%in the host Operating System (OS) from inside of such virtualized systems.
+%
+
+%In this paper, we offer a new insight about where security bugs lie. By observing that the OS kernel paths accessed
+%by popular applications in everyday use contain significantly fewer security bugs than less-used paths, 
+%we devise a design that allows applications to run more securely in VMs on top of a vulnerable host OS.
+%Furthermore, We
+%leverage this observation to devise the \lip design, which
+%\textbf{\textit{locks}} an application, and the POSIX implementation that services it, into
+%accessing only the well-used \textbf{\textit{popular}} portion of the kernel.  Using the \lip model, we
+%implement a prototype virtual machine called Lind.
+%
+%We compare Lind and three other virtualized systems that were
+%available at the release of Linux kernel version 3.14.1, and evaluate
+%their effectiveness in containing the zero-day kernel bugs that have been discovered
+%since then.
+%
+%Our results show that Lind can prevent the triggering of zero-day kernel bugs significantly better
+%than an existing library OS (Graphene) and containers such as Docker and LXC.
+
+Virtual machines (VMs) that try to isolate untrusted code are widely used in practice. 
 However, it is often possible to trigger zero-day flaws
 in the host Operating System (OS) from inside of such virtualized systems.
 %
-In this paper, we offer a new insight about where security bugs lie. By observing that the OS kernel paths accessed
+In this paper, we propose a new security metric showing strong correlation between ``popular paths'' 
+and kernel vulnerabilities. We verified that the OS kernel paths accessed 
 by popular applications in everyday use contain significantly fewer security bugs than less-used paths, 
-we devise a design that allows applications to run more securely in VMs on top of a vulnerable host OS.
-Furthermore, We
-leverage this observation to devise the \lip design, which
+Furthermore, We leverage our ``popular paths'' metric to devise the \lip design, which
 \textbf{\textit{locks}} an application, and the POSIX implementation that services it, into
 accessing only the well-used \textbf{\textit{popular}} portion of the kernel.  Using the \lip model, we
 implement a prototype virtual machine called Lind.
 %
-We compare Lind and three other virtualized systems that were
-available at the release of Linux kernel version 3.14.1, and evaluate
-their effectiveness in containing the zero-day kernel bugs that have been discovered
-since then.
-%
+We compare Lind and three other virtualized systems. 
 Our results show that Lind can prevent the triggering of zero-day kernel bugs significantly better
-than an existing library OS (Graphene) and containers such as Docker and LXC.
+than an existing library OS (Graphene) and containers such as Docker and LXC. 
