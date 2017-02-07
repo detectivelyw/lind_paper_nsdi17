@@ -28,7 +28,7 @@ these calls would usually be forwarded to the host OS kernel. In Lind, we
 modified NaCl to instead forward these calls to our SafePOSIX re-creation 
 (described in detail below).
 
-\paragraph{Seattle's Repy.}
+\paragraph{SafePOSIX.}
 
 To build an API that can access the safe parts of the underlying kernel while
 still supporting existing applications, we need two things. First, we need a
@@ -101,9 +101,9 @@ These give the program the illusion of a normal file system even though Repy doe
 When Lind starts, the file system does some pre-initialization. Using the Repy API, the SafePOSIX file system reads a file named ``lind.metadata''
 from the local directory. This file contains packed metadata from previous runs of Lind,
 and is loaded into the runtime SafePOSIX file system data structures.
-There are three main data structures: a list of open file handles, a Python dict of inodes and file metadata,
-and a mapping table to go from a file name and path to an inode number.
-All these data structures are stored in memory, and written to disk when they are changed.
+%There are three main data structures: a list of open file handles, a Python dict of inodes and file metadata,
+%and a mapping table to go from a file name and path to an inode number.
+%All these data structures are stored in memory, and written to disk when they are changed.
 
 The \texttt{open} system call is the normal starting point for most file system operations.
 Given a path, it will return a file descriptor to perform other operations like \texttt{read} and \texttt{write}.
@@ -115,7 +115,7 @@ If the \texttt{create} flag is passed, it adds an entry to the inode and inode l
 The backing files are not named the same as the actual files, but rather just ``linddata.001,'' ``linddata.002,'' etc.
 The simple names for the backing files allow us to store the real file name in the metadata, a
 necessary step because of Repy's strict rules about the content of filenames.
-Finally, the call returns the index into the file handle table or, if an error was encountered, an error number to which the Unix \texttt{errno} value is set.
+%Finally, the call returns the index into the file handle table or, if an error was encountered, an error number to which the Unix \texttt{errno} value is set.
 
 %Here is another example of how SafePOSIX re-creation would work with the symbolic link function.
 %Instead of relying on the underlying kernel to create symbolic links between real files
