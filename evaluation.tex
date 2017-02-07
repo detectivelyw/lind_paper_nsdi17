@@ -1,6 +1,8 @@
 \section{Evaluation}
 \label{sec.evaluation}
 
+To demonstrate that our ``popular paths'' metric is useful and practical, 
+we use our Lind prototype as an example. 
 To evaluate Lind's effectiveness,
 %in containing untrusted code and protecting the OS kernel,
 we compared its performance against three existing
@@ -452,6 +454,11 @@ bug or failure, the Repy kernel should not substantially increase the risk of tr
 
 \subsection{Performance Overhead}
 \label{Performance-Evaluation}
+
+The purpose of our performance evaluation is to show that the \lip design based on our 
+``popular paths'' metric is practical in building real-world systems. Overhead is expected. 
+We have not optimized our Lind prototype to try to improve performance, since that is not 
+our main purpose of building the prototype. 
 
 %\textbf{Test Purpose.}
 %To measure Lind's runtime performance overhead compared to Native Linux
