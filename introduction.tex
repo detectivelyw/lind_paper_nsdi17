@@ -87,31 +87,19 @@ it would greatly increase resilience to zero-day bugs in the host OS kernel.
 %(Chou \cite{PittSFIeld} and Ozment \cite{ozment2006milk}),
 %we found them less effective at predicting the location of zero-day bugs.
 
-We demonstrate that the ``popular paths'' metric is useful for building secure virtual machines. 
-We use the metric to come up with a new design scheme that
-accesses only popular code lines through a very small trusted computing base.
-We name it \lip, as it locks kernel access to only code
-associated with popular programs. %However, the popular kernel functionality is
-%not sufficient to implement all of the system call functionality needed by
-%applications.
-However, there are many system calls outside of the popular paths that need to
-be supported to run applications~\cite{tsai2016study}.  Recognizing this,
- \lip re-creates needed-but-risky OS functionality
-(e.g., POSIX) in a sandbox that only allows access to popular kernel paths.
-In this way even a bug inside of the OSVM implementation will not result in a system compromise
-so long as the minimal sandbox remains uncompromised.
+Unfortunately, demonstrating that security bugs are concentrated on unpopular
+code paths is only the first step to arguing that this leads to useful and
+practical design approaches.  Potential objections, which we evaluated are:
+\begin{itemize}
+\item It might not be possible in real-life codebases to successfully avoid ``uncommon'' paths.  Perhaps other applications, or future versions of the applications we tested, frequently require the use of ``uncommon'' paths, thus making our metric untenable?
+\item The exploits that adversaries use change over time.  Perhaps our observation that common paths are safer  is only an artifact of when we did our measurements and is not predictive of future exploits?
+\item Lastly, can developers make use of this observation in a practical setting?  That is, is it feasible for developers to actively try to avoid uncommon code paths?
+\end{itemize}
+To test these objections we built a prototype system which forces applications
+to only use popular file system paths.
 
-%This is sufficient to
-%perform operations for file systems, such as
-%networking, threading, memory management, and other required functions.
-%\cappos{The fact it is a PL sandbox is an implemenation detail, not design
-%detail...  Comment out the next sentence if you agree.}
-%For complex functionalities,  \emph{Lock-in-Pop} re-creates system calls in
-%a memory-safe programming language sandbox.
 
-To show the practicality of the ``popular paths'' metric, we use it to implement a
-prototype virtual machine that can offer enhanced security without sacrificing
-basic functionality. Dubbed Lind, it pairs two components -- Google's Native Client
+Our prototype, Lind, pairs two components -- Google's Native Client
 (NaCl) \cite{NaCl-09} and Seattle's Repy \cite{Repy-10}.
 NaCl serves as a computational module that isolates
 binaries, providing memory safety for legacy programs running in our OSVM.
@@ -128,6 +116,10 @@ bugs in Lind and three other virtualized environments,
 including Docker, LXC, and Graphene.
 Our results show that applications in Lind were substantially less likely to trigger
 kernel bugs.
+
+By so doing we demonstrated that forcing an application to only use popular
+OS kernel approach can be an effective and practical method to improve
+system security.
 
 In summary, the main contributions of this paper are as follows:
 
